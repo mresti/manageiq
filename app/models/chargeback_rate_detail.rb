@@ -3,19 +3,44 @@ class ChargebackRateDetail < ApplicationRecord
   belongs_to :detail_measure, :class_name => "ChargebackRateDetailMeasure", :foreign_key => :chargeback_rate_detail_measure_id
   belongs_to :detail_currency, :class_name => "ChargebackRateDetailCurrency", :foreign_key => :chargeback_rate_detail_currency_id
   has_many :chargeback_tiers, :dependent => :destroy
-
-  validates :rate, :numericality => true
   validates :group, :source, :presence => true
+  
+  #Tiers should be comlete
+  def rate(value)
+    @fix_rate = 0.0
+    @var_rate = 0.0
+    ChargebackTier.where(:chargeback_rate_detail_id => id).each do |tier|
+      if value >= tier.start
+        if value < tier.end
+          @fix_rate = tier.fix_rate
+          @var_rate = tier.var_rate
+          return
+        end
+      end
+    end
+  end
 
   def cost(value)
     return 0.0 unless self.enabled?
     value = 1 if group == 'fixed'
+    rate(value)
+    hourly(@fix_rate) + hourly(@var_rate) * value
+  end
 
-    value * hourly_rate
+  def hourly(rate)
+    hr = case per_time
+         when "hourly"  then rate
+         when "daily"   then rate / 24
+         when "weekly"  then rate / 24 / 7
+         when "monthly" then rate / 24 / 30
+         when "yearly"  then rate / 24 / 365
+         else raise "rate time unit of '#{per_time}' not supported"
+         end
   end
 
   def hourly_rate
-    rate = self.rate.to_s.to_f
+    rate(0.0)
+    rate = @var_rate
     return 0.0 if rate.zero?
 
     hr = case per_time
@@ -73,15 +98,20 @@ class ChargebackRateDetail < ApplicationRecord
   end
 
   def friendly_rate
+    rate(0.0)
     value = read_attribute(:friendly_rate)
     return value unless value.nil?
 
     if group == 'fixed'
       # Example: 10.00 Monthly
-      "#{rate} #{per_time.to_s.capitalize}"
+      "#{@fix_rate+@var_rate} #{per_time.to_s.capitalize}"
     else
-      # Example: Daily @ .02 per MHz
-      "#{per_time.to_s.capitalize} @ #{rate} per #{per_unit_display}"
+      s = ""
+      ChargebackTier.where(:chargeback_rate_detail_id => id).each do |tier|
+        # Example: Daily @ .02 per MHz
+        s+="#{per_time.to_s.capitalize} @ #{tier.fix_rate} + #{tier.var_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}\n"
+      end
+      s.chomp
     end
   end
 

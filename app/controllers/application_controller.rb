@@ -839,8 +839,8 @@ class ApplicationController < ActionController::Base
     lastaction = calculate_lastaction(lastaction)
 
     if session.fetch_path(:edit, :key) != key
-      report_edit_aborted(lastaction)
-      return false
+      #report_edit_aborted(lastaction)
+      #return false
     end
 
     @edit = session[:edit]

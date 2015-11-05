@@ -109,7 +109,7 @@ class ChargebackController < ApplicationController
           {:model => ui_lookup(:model => "ChargebackRate")} :
         _("Edit of %{model} \"%{name}\" was cancelled by the user") % {:model => ui_lookup(:model => "ChargebackRate"), :name => @sb[:rate].description}}")
       get_node_info(x_node)
-      @sb[:rate] = @sb[:rate_details] = nil
+      @sb[:rate] = @sb[:rate_details] = @sb[:num_tiers] = nil
       @edit = session[:edit] = nil  # clean out the saved info
       session[:changed] =  false
       replace_right_cell
@@ -180,6 +180,7 @@ class ChargebackController < ApplicationController
       if params[:typ] == "copy" # if tab was not changed
         session[:changed] = true
         @sb[:rate_details] = []
+        @sb[:num_tiers]
         rate = ChargebackRate.find(obj[0])
         @sb[:rate] = ChargebackRate.new
         @sb[:rate].description = _("Copy of %{description}") % {:description => rate.description}
@@ -190,7 +191,7 @@ class ChargebackController < ApplicationController
           detail = ChargebackRateDetail.new
           detail.description = r[:description]
           detail.source = r[:source]
-          detail.rate = r[:rate]
+          #detail.rate = r[:rate]
           detail.per_time = r[:per_time]
           detail.group = r[:group]
           detail.per_unit = r[:per_unit]
@@ -202,6 +203,7 @@ class ChargebackController < ApplicationController
       else
         session[:changed] = false
         @sb[:rate] = params[:typ] == "new" ? ChargebackRate.new : ChargebackRate.find(obj[0])
+        @sb[:num_tiers] = []
         @sb[:rate_details] = @sb[:rate].chargeback_rate_details.to_a
         if @sb[:rate_details].blank?
           fixture_file = File.join(@@fixture_dir, "chargeback_rates.yml")
@@ -216,7 +218,6 @@ class ChargebackController < ApplicationController
                   detail.source = r[:source]
                   # detail.rate = r[:rate]
                   # detail.per_time = r[:per_time]
-                  detail.rate = ""
                   detail.per_time = "hourly"
                   detail.group = r[:group]
                   detail.per_unit = r[:per_unit]
@@ -327,6 +328,18 @@ class ChargebackController < ApplicationController
       page.replace("cb_assignment_div", :partial => "cb_assignments") if params[:cbshow_typ] || params[:cbtag_cat]      # only replace if cbshow_typ or cbtag_cat has changed
       page << javascript_for_miq_button_visibility(changed)
     end
+  end
+
+  def cb_tier_add
+    @edit = session[:edit]
+    i = params[:id]
+    ii = i.to_i
+    @sb[:num_tiers][ii] = 1 unless @sb[:num_tiers][ii]
+    @sb[:num_tiers][ii] += 1
+    render :update do |page|
+        page.replace("rate_detail_row#{i}", :partial => "tier_row")
+    end
+    puts "cb_tier_add2: #{@edit.nil?}"
   end
 
   def cb_assign_update
@@ -561,7 +574,7 @@ class ChargebackController < ApplicationController
 
     @sb[:rate_details].each do |r|
       temp = {}
-      temp[:rate] = (!r.rate.nil? && r.rate != "") ? r.rate : 0
+      #temp[:rate] = (!r.rate.nil? && r.rate != "") ? r.rate : 0
       temp[:per_time] = r.per_time ? r.per_time : "hourly"
       temp[:per_unit] = r.per_unit
       temp[:detail_measure] = r.detail_measure
@@ -584,7 +597,7 @@ class ChargebackController < ApplicationController
     @sb[:rate] = @edit[:rate]
     @edit[:new][:description] = params[:description] if params[:description]
     @edit[:new][:details].each_with_index do |_detail, i|
-      @edit[:new][:details][i][:rate] = params["rate_#{i}".to_sym] if params["rate_#{i}".to_sym]
+      #@edit[:new][:details][i][:rate] = params["rate_#{i}".to_sym] if params["rate_#{i}".to_sym]
       @edit[:new][:details][i][:per_time] = params["per_time_#{i}".to_sym] if params["per_time_#{i}".to_sym]
       @edit[:new][:details][i][:per_unit] = params["per_unit_#{i}".to_sym] if params["per_unit_#{i}".to_sym]
       # Add currencies to chargeback_controller.rb
@@ -594,7 +607,7 @@ class ChargebackController < ApplicationController
 
   def cb_rate_set_record_vars
     @edit[:new][:details].each_with_index do |_rate, i|
-      @sb[:rate_details][i].rate               = @edit[:new][:details][i][:rate]
+      #@sb[:rate_details][i].rate               = @edit[:new][:details][i][:rate]
       @sb[:rate_details][i].per_time           = @edit[:new][:details][i][:per_time]
       @sb[:rate_details][i].per_unit           = @edit[:new][:details][i][:per_unit]
       # C: Record the currency selected in the edit view, in my chargeback_rate_details table

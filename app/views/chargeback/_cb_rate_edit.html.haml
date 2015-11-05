@@ -31,36 +31,53 @@
   %table.table.table-bordered
     %thead
       %tr
-        %th= _('Group')
-        %th= _('Description')
-        %th= _('Rate')
-        %th= _('Per Time')
-        %th= _('Per Unit')
+        %th{:rowspan => "2"}= _('Group')
+        %th{:rowspan => "2"}= _('Description')
+        %th{:rowspan => "2"}= _('Interval start')
+        %th{:rowspan => "2"}= _('Interval end')
+        %th{:colspan => "2"}= _('Rate')
+        %th{:rowspan => "2"}= _('Add Tier')
+        %th{:rowspan => "2"}= _('Per Time')
+        %th{:rowspan => "2"}= _('Per Unit')
+      %tr
+        %th= _("Fixed")
+        %th= _("Variable")
     %tbody
       - @sb[:rate_details].each_with_index do |r, i|
         - @cur_group = r[:group] if @cur_group.nil?
         - if @cur_group != r[:group]
           - @cur_group = r[:group]
           %tr
-            %td.active{:colspan => "6"} &nbsp;
-        %tr
+            %td.active{:colspan => "9"} &nbsp;
+        %tr{:id => "rate_detail_row#{i}"}
           %td
             = h(rate_detail_group(r[:group]))
           %td
             = r[:description]
+          %td
+            = text_field_tag("start#{i}", "-∞",
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
+          %td
+            = text_field_tag("end#{i}", "∞",
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
           %td{:align => 'right'}
-            = text_field_tag("rate_#{i}", @edit[:new][:details][i][:rate],
+            = text_field_tag("fix_rate#{i}", 0,
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+          %td{:align => 'right'}
+            = text_field_tag("var_rate#{i}", 0,
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+          %td
+            = button_tag(_("Add"),
+                         :class   => "btn btn-primary",
+                         :alt     => t = _("Add a new tier"),
+                         :title   => t,
+                         :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
+                                                               :id     => i,
+                                                               :button => "add")}');")
           %td
             = select_tag("per_time_#{i}",
               options_for_select(@edit[:new][:per_time_types].invert, @edit[:new][:details][i][:per_time]),
               "data-miq_observe" => {:url => url}.to_json)
-            - measure = @edit[:new][:details][i][:detail_measure]
-            - if measure.nil?
-              /if the rate detail don't have a metric associated, display the per_unit_display
-              %td
-                = r.per_unit_display
-            - else
-              /if the rate detail have a metric associated, display an options field with per_unit selected
-              %td
-                = select_tag("per_unit_#{i}", options_for_select(measure.measures, r.per_unit), "data-miq_observe" => {:url => url}.to_json)
+          - per_unit = r.per_unit_display
+          %td
+            = per_unit

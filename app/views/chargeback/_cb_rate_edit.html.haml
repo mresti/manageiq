@@ -55,16 +55,16 @@
           %td
             = r[:description]
           %td
-            = text_field_tag("start#{i}", "-∞",
+            = text_field_tag("start_#{i}_0", "-∞",
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
           %td
-            = text_field_tag("end#{i}", "∞",
+            = text_field_tag("end_#{i}_0", "∞",
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
           %td{:align => 'right'}
-            = text_field_tag("fix_rate#{i}", 0,
+            = text_field_tag("fix_rate_#{i}_0", 0,
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td{:align => 'right'}
-            = text_field_tag("var_rate#{i}", 0,
+            = text_field_tag("var_rate_#{i}_0", 0,
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td
             = button_tag(_("Add"),

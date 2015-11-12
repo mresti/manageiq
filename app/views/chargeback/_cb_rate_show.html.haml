@@ -33,7 +33,6 @@
           %tr
             %td.active{:colspan => "9"} &nbsp;
         - num_tiers = r.chargeback_tiers.to_a.blank? ? "1" : r.chargeback_tiers.to_a.length.to_s
-        - puts num_tiers
         %tr
           %td{:rowspan => num_tiers}
             = h(rate_detail_group(r[:group]))
@@ -48,11 +47,11 @@
             = tier.fix_rate ? tier.fix_rate : 0.0
           %td{:align => "right"}
             = tier.var_rate ? tier.var_rate : 0.0
-          %td{:align => "right"}
+          %td{:rowspan => num_tiers}
             = "#{r.detail_currency.symbol} [#{r.detail_currency.code}]"
-          %td
+          %td{:rowspan => num_tiers}
             = r[:per_time]
-          %td
+          %td{:rowspan => num_tiers}
             = r.per_unit_display
         - for j in 1..num_tiers.to_i-1
           - tier = r.chargeback_tiers.to_a[j]

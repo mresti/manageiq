@@ -3,59 +3,24 @@
 - url = url_for(:action => 'cb_rate_form_field_changed', :id => "#{@sb[:rate].id || "new"}")
 - n = @sb[:num_tiers][i.to_i]
 
-%tr{:id => "rate_detail_row#{i}"}
-  %td{:rowspan => n.to_s}
-    = Dictionary.gettext(r[:group], :type => :rate_detail_group, :notfound => :titleize)
-  %td{:rowspan => n.to_s}
-    = r[:description]
+%tr{:id => "rate_detail_row_#{i}_#{n-1}"}
   %td
-    = text_field_tag("start_#{i}_#{n-2}", "-∞",
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
-  %td
-    = text_field_tag("end_#{i}_#{n-2}", "0",
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
-  %td{:align => 'right'}
-    = text_field_tag("fix_rate_#{i}_#{n-2}", 0,
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
-  %td{:align => 'right'}
-    = text_field_tag("var_rate_#{i}_#{n-2}", 0,
+    = text_field_tag("start_#{i}_#{n-1}",  @edit[:new][:tiers][i.to_i][n-1][:start],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
-    = button_tag(_("Add"),
+    = text_field_tag("end_#{i}_#{n-1}", @edit[:new][:tiers][i.to_i][n-1][:end],
+      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+  %td{:align => 'right'}
+    = text_field_tag("fix_rate_#{i}_#{n-1}", @edit[:new][:tiers][i.to_i][n-1][:fix_rate],
+      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+  %td{:align => 'right'}
+    = text_field_tag("var_rate_#{i}_#{n-1}", @edit[:new][:tiers][i.to_i][n-1][:var_rate],
+      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+  %td
+    = button_tag(_("Remove"),
                  :class   => "btn btn-primary",
-                 :alt     => t = _("Add a new tier"),
+                 :alt     => t = _("Remove the tier"),
                  :title   => t,
-                 :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
+                 :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_remove",
                                                        :id     => i,
-                                                     :button => "add")}');")
-  %td{:rowspan => n.to_s}
-    - per_time_types = {"hourly"  => "Hourly", "daily"   => "Daily", "weekly"  => "Weekly", "monthly" => "Monthly"}
-    = select_tag("per_time_#{i}",
-      options_for_select(per_time_types.invert, "Hourly"),
-      "data-miq_observe" => {:url => url}.to_json)
-
-  - per_unit = r.per_unit_display
-  %td{:rowspan => n.to_s}
-    = per_unit
-
-  %tr{:id => "rate_detail_row#{i}"}
-    %td
-      = text_field_tag("start_#{i}_#{n-1}", "-∞",
-        :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
-    %td
-      = text_field_tag("end_#{i}_#{n-1}", "0",
-        :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
-    %td{:align => 'right'}
-      = text_field_tag("fix_rate_#{i}_#{n-1}", 0,
-        :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
-    %td{:align => 'right'}
-      = text_field_tag("var_rate_#{i}_#{n-1}", 0,
-        :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
-    %td
-      = button_tag(_("Add"),
-                   :class   => "btn btn-primary",
-                   :alt     => t = _("Add a new tier"),
-                   :title   => t,
-                   :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
-                                                         :id     => i,
-                                                       :button => "add")}');")
+                                                       :button => "remove")}');")

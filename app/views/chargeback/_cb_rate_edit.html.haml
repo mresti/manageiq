@@ -36,35 +36,39 @@
         %th{:rowspan => "2"}= _('Interval start')
         %th{:rowspan => "2"}= _('Interval end')
         %th{:colspan => "2"}= _('Rate')
-        %th{:rowspan => "2"}= _('Add Tier')
+        %th{:rowspan => "2"}= _('Add/Remove Tier')
         %th{:rowspan => "2"}= _('Per Time')
         %th{:rowspan => "2"}= _('Per Unit')
       %tr
         %th= _("Fixed")
         %th= _("Variable")
     %tbody
+      - if params[:pressed] == "chargeback_rates_edit"
+        - edit = true
       - @sb[:rate_details].each_with_index do |r, i|
         - @cur_group = r[:group] if @cur_group.nil?
         - if @cur_group != r[:group]
           - @cur_group = r[:group]
           %tr
             %td.active{:colspan => "9"} &nbsp;
-        %tr{:id => "rate_detail_row#{i}"}
-          %td
+        - num_tiers = r.chargeback_tiers.to_a.blank? ? "1" : r.chargeback_tiers.to_a.length.to_s
+
+        %tr{:id => "rate_detail_row_#{i}_0"}
+          %td{:rowspan => num_tiers}
             = h(rate_detail_group(r[:group]))
-          %td
+          %td{:rowspan => num_tiers}
             = r[:description]
           %td
-            = text_field_tag("start_#{i}_0", "-∞",
-              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
+            = text_field_tag("start_#{i}_0", @edit[:new][:tiers][i][0][:start].to_s,
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td
-            = text_field_tag("end_#{i}_0", "∞",
-              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:url => url}.to_json)
-          %td{:align => 'right'}
-            = text_field_tag("fix_rate_#{i}_0", 0,
+            = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i][0][:end].to_s,
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td{:align => 'right'}
-            = text_field_tag("var_rate_#{i}_0", 0,
+            = text_field_tag("fix_rate_#{i}_0", @edit[:new][:tiers][i][0][:fix_rate],
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+          %td{:align => 'right'}
+            = text_field_tag("var_rate_#{i}_0", @edit[:new][:tiers][i][0][:var_rate],
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td
             = button_tag(_("Add"),
@@ -74,10 +78,33 @@
                          :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
                                                                :id     => i,
                                                                :button => "add")}');")
-          %td
+          %td{:rowspan => num_tiers}
             = select_tag("per_time_#{i}",
               options_for_select(@edit[:new][:per_time_types].invert, @edit[:new][:details][i][:per_time]),
               "data-miq_observe" => {:url => url}.to_json)
           - per_unit = r.per_unit_display
-          %td
+          %td{:rowspan => num_tiers}
             = per_unit
+        - for j in 1..num_tiers.to_i-1
+          - tier = r.chargeback_tiers.to_a[j]
+          %tr
+            %td
+              = text_field_tag("start_#{i}_#{j}", tier.start,
+                :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+            %td
+              = text_field_tag("end_#{i}_#{j}", tier.end,
+                :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+            %td{:align => "right"}
+              = text_field_tag("fix_rate_#{i}_#{j}", tier.fix_rate,
+                :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+            %td{:align => "right"}
+              = text_field_tag("var_rate_#{i}_#{j}", tier.var_rate,
+                :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+            %td
+              = button_tag(_("Remove"),
+                   :class   => "btn btn-primary",
+                   :alt     => t = _("Remove the tier"),
+                   :title   => t,
+                   :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_remove",
+                                                         :id     => i,
+                                                         :button => "remove")}');")

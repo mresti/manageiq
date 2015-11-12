@@ -202,7 +202,7 @@ class ChargebackController < ApplicationController
           detail.metric = r[:metric]
           detail.chargeback_rate_detail_measure_id = r[:chargeback_rate_detail_measure_id]
           detail.chargeback_rate_detail_currency_id = r[:chargeback_rate_detail_currency_id]
-          detail.chargeback_tiers = r[:chargeback_tiers]
+          detail.chargeback_tiers = r.chargeback_tiers
           @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
           @sb[:tiers][i].push(detail.chargeback_tiers) unless @sb[:tiers][i].include?(detail.chargeback_tiers)
         end
@@ -211,11 +211,13 @@ class ChargebackController < ApplicationController
         @sb[:rate] = params[:typ] == "new" ? ChargebackRate.new : ChargebackRate.find(obj[0])
         @sb[:num_tiers] = []
         @sb[:tiers] = []
-        @sb[:rate_details] = @sb[:rate].chargeback_rate_details.to_a
+        @sb[:rate_details] = @sb[:rate].chargeback_rate_details.to_a#.reverse
         @sb[:rate_details].each_with_index do |detail, i|
           @sb[:tiers][i] = detail.chargeback_tiers.to_a
+          puts "Rate detail "+i.to_s+", description =  "+detail.description, @sb[:tiers][i].class
         end
         if @sb[:rate_details].blank?
+          puts "No rate details"
           fixture_file = File.join(@@fixture_dir, "chargeback_rates.yml")
           if File.exist?(fixture_file)
             fixture = YAML.load_file(fixture_file)
@@ -350,14 +352,23 @@ class ChargebackController < ApplicationController
 
   def cb_tier_add
     @edit = session[:edit]
+    puts "Start: "+@edit[:new][:tiers][0][0][:start].to_s
     i = params[:id]
     ii = i.to_i
     @sb[:num_tiers][ii] = 1 unless @sb[:num_tiers][ii]
     @sb[:num_tiers][ii] += 1
+    pos = @sb[:num_tiers][ii]-2
+    n = pos+1
+    @edit[:new][:tiers][ii][n] = {}
+    @edit[:new][:tiers][ii][n][:start] = @edit[:new][:tiers][ii][pos][:end]
+    @edit[:new][:tiers][ii][n][:end] = Float::MAX
+    @edit[:new][:tiers][ii][n][:fix_rate] = 0.0
+    @edit[:new][:tiers][ii][n][:var_rate] = 0.0
     render :update do |page|
-        page.replace("rate_detail_row#{i}", :partial => "tier_row")
+        page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row")
+        page.insert_html(:after, "rate_detail_row_#{i}_#{pos}", :partial => "tier_row")
     end
-    puts "cb_tier_add2: #{@edit.nil?}"
+    #cb_rate_get_form_vars
   end
 
   def cb_assign_update
@@ -594,21 +605,24 @@ class ChargebackController < ApplicationController
     @sb[:rate_details].each_with_index do |r, i|
       #@edit[:new][:details][i] = []
       temp = {}
-      temp2 = {}
       #temp[:rate] = (!r.rate.nil? && r.rate != "") ? r.rate : 0
       temp[:per_time] = r.per_time ? r.per_time : "hourly"
       temp[:per_unit] = r.per_unit
       temp[:detail_measure] = r.detail_measure
       temp[:currency] = r.detail_currency.id
-      temp2[:fix_rate] = 0.0
-      temp2[:var_rate] = 0.0
-      temp2[:start] = -Float::MAX
-      temp2[:end] = Float::MAX
-      temp2[:chargeback_rate_detail_id] = r.id
-      @sb[:num_tiers][i] = 1
-      @edit[:new][:details].push(temp)
       @edit[:new][:tiers][i] = []
-      @edit[:new][:tiers][i].push(temp2)
+      @sb[:tiers][i].each do |t|
+        temp2 = {}
+        temp2[:fix_rate] = t.fix_rate
+        puts "Temp fix rate = "+temp2[:fix_rate].to_s
+        temp2[:var_rate] = t.var_rate
+        temp2[:start] = t.start
+        temp2[:end] = t.end
+        temp2[:chargeback_rate_detail_id] = r.id
+        @edit[:new][:tiers][i].push(temp2)
+      end
+      @sb[:num_tiers][i] = @sb[:tiers][i].length
+      @edit[:new][:details].push(temp)
     end
 
     @edit[:new][:per_time_types] = {
@@ -631,8 +645,6 @@ class ChargebackController < ApplicationController
       @edit[:new][:details][i][:per_unit] = params["per_unit_#{i}".to_sym] if params["per_unit_#{i}".to_sym]
       # Add currencies to chargeback_controller.rb
       @edit[:new][:details][i][:currency] = params[:currency] if params[:currency]
-      puts @sb[:num_tiers][i]
-      puts @edit[:new][:tiers]
       puts i,@edit[:new][:tiers][i]
       for j in 0..@sb[:num_tiers][i].to_i-1
         @edit [:new][:tiers][i][j] = {} unless @edit[:new][:tiers][i][j]
@@ -642,6 +654,7 @@ class ChargebackController < ApplicationController
         @edit[:new][:tiers][i][j][:end] = params["end_#{i}_#{j}".to_sym] if params["end_#{i}_#{j}".to_sym]
         #@edit[:new][:tiers][j][:fix_rate] = params["fix_rate_#{i}_#{j}".to_sym] if params["fix_rate_#{i}_#{j}".to_sym]
       end
+      puts "After "+i.to_s, @edit[:new][:tiers][i]
     end
   end
 
@@ -654,8 +667,7 @@ class ChargebackController < ApplicationController
       @sb[:rate_details][i].chargeback_rate_detail_currency_id = @edit[:new][:details][i][:currency]
       @sb[:rate_details][i].chargeback_rate_id = @sb[:rate].id
       @edit[:new][:tiers][i].each_with_index do |_tier, j|
-        puts _tier
-        puts _tier.class
+        puts "Tier #{i}_#{j}: ", _tier
         @sb[:tiers][i][j] = ChargebackTier.new
         @sb[:tiers][i][j].start = @edit[:new][:tiers][i][j][:start]
         @sb[:tiers][i][j].end = @edit[:new][:tiers][i][j][:end]

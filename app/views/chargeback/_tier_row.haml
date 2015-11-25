@@ -2,6 +2,7 @@
 - r = @sb[:rate_details][i.to_i]
 - url = url_for(:action => 'cb_rate_form_field_changed', :id => "#{@sb[:rate].id || "new"}")
 - n = @sb[:num_tiers][i.to_i]
+- n = @sb[:tier_row] if @sb[:tier_row]
 
 %tr{:id => "rate_detail_row_#{i}_#{n-1}"}
   %td
@@ -18,9 +19,9 @@
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
     = button_tag(_("Remove"),
-                 :class   => "btn btn-primary",
+                 :class   => "btn btn-default",
                  :alt     => t = _("Remove the tier"),
                  :title   => t,
                  :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_remove",
-                                                       :id     => i,
+                                                       :id     => i+"-#{n-1}",
                                                        :button => "remove")}');")

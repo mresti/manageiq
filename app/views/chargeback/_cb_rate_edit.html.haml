@@ -1,5 +1,6 @@
 - url = url_for(:action => 'cb_rate_form_field_changed', :id => "#{@sb[:rate].id || "new"}")
 - currency = ChargebackRateDetailCurrency.currencies_for_select
+#flash_msg_div
 #form_div
   %h3
     = _('Basic Info')
@@ -59,10 +60,10 @@
           %td{:rowspan => num_tiers}
             = r[:description]
           %td
-            = text_field_tag("start_#{i}_0", @edit[:new][:tiers][i][0][:start].to_s,
+            = text_field_tag("start_#{i}_0", @edit[:new][:tiers][i][0][:start],
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td
-            = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i][0][:end].to_s,
+            = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i][0][:end],
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td{:align => 'right'}
             = text_field_tag("fix_rate_#{i}_0", @edit[:new][:tiers][i][0][:fix_rate],
@@ -72,7 +73,7 @@
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td
             = button_tag(_("Add"),
-                         :class   => "btn btn-primary",
+                         :class   => "btn btn-default",
                          :alt     => t = _("Add a new tier"),
                          :title   => t,
                          :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
@@ -87,7 +88,7 @@
             = per_unit
         - for j in 1..num_tiers.to_i-1
           - tier = r.chargeback_tiers.to_a[j]
-          %tr
+          %tr{:id => "rate_detail_row_#{i}_#{j}"}
             %td
               = text_field_tag("start_#{i}_#{j}", tier.start,
                 :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
@@ -102,9 +103,9 @@
                 :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
             %td
               = button_tag(_("Remove"),
-                   :class   => "btn btn-primary",
+                   :class   => "btn btn-default",
                    :alt     => t = _("Remove the tier"),
                    :title   => t,
                    :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_remove",
-                                                         :id     => i,
+                                                         :id     => "#{i}-#{j}",
                                                          :button => "remove")}');")

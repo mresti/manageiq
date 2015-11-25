@@ -4,6 +4,7 @@ class ChargebackRateDetail < ApplicationRecord
   belongs_to :detail_currency, :class_name => "ChargebackRateDetailCurrency", :foreign_key => :chargeback_rate_detail_currency_id
   has_many :chargeback_tiers, :dependent => :destroy
   validates :group, :source, :presence => true
+  validate :complete_tiers, on: :create
   
   #Tiers should be comlete
   def rate(value)
@@ -122,5 +123,30 @@ class ChargebackRateDetail < ApplicationRecord
   def rate_type
     # Return parent's rate type
     chargeback_rate.rate_type unless chargeback_rate.nil?
+  end
+
+  def complete_tiers
+    cbts = chargeback_tiers
+    start = -Float::INFINITY
+    tier_ends = false
+    error = false
+    unless cbts.nil?
+      cbts.each do |tier|
+        byebug
+        if tier.start != start
+          errors.add(:chargeback_tiers, "must include all values from -∞ to ∞ once.")
+          error = true
+          break
+        else
+          start = tier.end
+          if tier.end == Float::INFINITY
+            tier_ends = true
+          end
+        end
+      end
+      unless tier_ends || error
+        errors.add(:chargeback_tiers, "must include all values from -∞ to ∞.")
+      end
+    end
   end
 end

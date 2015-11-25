@@ -40,9 +40,9 @@
             = r[:description]
           - tier = r.chargeback_tiers.first
           %td
-            = tier.start ? tier.start : (-Float::MAX).to_s
+            = tier.start ? tier.start : (-Float::INFINITY).to_s
           %td
-            = tier.end ? tier.end : Float::MAX.to_s
+            = tier.end ? tier.end : Float::INFINITY.to_s
           %td{:align => "right"}
             = tier.fix_rate ? tier.fix_rate : 0.0
           %td{:align => "right"}
@@ -64,3 +64,5 @@
               = tier.fix_rate
             %td{:align => "right"}
               = tier.var_rate
+        %tr
+          %td{:colspan => "9"}

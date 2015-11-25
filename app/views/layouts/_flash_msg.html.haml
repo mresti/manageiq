@@ -15,6 +15,7 @@
         - when :error
           .alert.alert-danger
             %span.pficon.pficon-error-circle-o
+            - puts fl[:message]
             %strong= h(fl[:message])
         - when :warning
           .alert.alert-warning

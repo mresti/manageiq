@@ -22,7 +22,7 @@
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
     = button_tag(_("Add"),
-                 :class   => "btn btn-primary",
+                 :class   => "btn btn-default",
                  :alt     => t = _("Add a new tier"),
                  :title   => t,
                  :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",

@@ -157,14 +157,21 @@ class ChargebackController < ApplicationController
         end
       else      # for save button
         cb_rate_set_record_vars
-        @sb[:rate].chargeback_rate_details.replace(@sb[:rate_details])
         @sb[:rate].chargeback_rate_details.each_with_index do |detail, i|
-          detail.chargeback_tiers.replace(@sb[:tiers][i])
+          @sb[:rate_details][i].chargeback_tiers = @sb[:tiers][i]
         end
+
+        # Detect errors saving tiers
+        tier_error = false
+        @sb[:tiers].each { |tiers| tiers.each { |tier| tier_error = true if tier.valid? == false}}
+
         # Detect errors saving rate details
         rate_detail_error = false
-        @sb[:rate_details].each { |detail| rate_detail_error = true if detail.save == false }
-        if rate_detail_error == false && @sb[:rate].save
+        @sb[:rate_details].each { |detail| rate_detail_error = true if detail.valid? == false}
+        # @sb[:rate].chargeback_rate_details.each_with_index { |_detial,i| tier_error = true if @sb[:tiers].save == false}
+        if rate_detail_error == false && tier_error == false && @sb[:rate].save
+          @sb[:rate].chargeback_rate_details.each_with_index {|detail, i| detail.chargeback_tiers.replace([])}
+          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save}}
           AuditEvent.success(build_saved_audit(@sb[:rate], @edit))
           add_flash(_("%{model} \"%{name}\" was saved") % {:model => ui_lookup(:model => "ChargebackRate"), :name => @sb[:rate].description})
           @edit = session[:edit] = nil  # clean out the saved info
@@ -222,6 +229,7 @@ class ChargebackController < ApplicationController
         @sb[:num_tiers] = []
         @sb[:tiers] = []
         @sb[:rate_details] = @sb[:rate].chargeback_rate_details.to_a#.reverse
+        @sb[:rate_details].sort_by! { |rd| [rd[:group].downcase, rd[:description].downcase] }
         @sb[:rate_details].each_with_index do |detail, i|
           @sb[:tiers][i] = detail.chargeback_tiers.to_a
           @sb[:num_tiers][i] = detail.chargeback_tiers.to_a.length
@@ -395,14 +403,13 @@ class ChargebackController < ApplicationController
           @sb[:tier_row] = k
           page.replace("rate_detail_row_#{i}_#{k-1}", :partial => "tier_row")
           @sb[:tier_row] = nil
-        elsif k==j.to_i
-          @sb[:rate_details][i.to_i].chargeback_tiers.to_a[j.to_i].destroy if @sb[:rate_details][i.to_i].chargeback_tiers.to_a[j.to_i] && params[:button] == "save"
         end
       end
       page.replace("rate_detail_row_#{i}_#{@sb[:num_tiers][i.to_i]}", '')
       page << javascript_for_miq_button_visibility(true)
     end
     @edit[:new][:tiers][i.to_i].delete_at(@sb[:num_tiers][i.to_i])
+    @sb[:tiers][i.to_i].delete_at(@sb[:num_tiers][i.to_i])
   end
 
   def cb_assign_update

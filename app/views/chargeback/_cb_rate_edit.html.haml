@@ -53,6 +53,7 @@
           %tr
             %td.active{:colspan => "9"} &nbsp;
         - num_tiers = r.chargeback_tiers.to_a.blank? ? "1" : r.chargeback_tiers.to_a.length.to_s
+        - num_tiers = @sb[:tiers][i].blank? ? "1" : @sb[:tiers][i].length.to_s
 
         %tr{:id => "rate_detail_row_#{i}_0"}
           %td{:rowspan => num_tiers}
@@ -88,6 +89,7 @@
             = per_unit
         - for j in 1..num_tiers.to_i-1
           - tier = r.chargeback_tiers.to_a[j]
+          - tier = @sb[:tiers][i][j]
           %tr{:id => "rate_detail_row_#{i}_#{j}"}
             %td
               = text_field_tag("start_#{i}_#{j}", tier.start,

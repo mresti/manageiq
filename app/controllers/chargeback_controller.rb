@@ -206,9 +206,11 @@ class ChargebackController < ApplicationController
         @sb[:rate] = ChargebackRate.new
         @sb[:rate].description = _("Copy of %{description}") % {:description => rate.description}
         @sb[:rate].rate_type = rate.rate_type
-        rate_details = rate.chargeback_rate_details
+        rate_details = rate.chargeback_rate_details.to_a
+        rate_details.sort_by! { |rd| [rd.group.downcase, rd.description.downcase] }
         # Create new rate detail records for copied rate record
         rate_details.each_with_index do |r,i|
+          @sb[:tiers][i] = []
           detail = ChargebackRateDetail.new
           detail.description = r[:description]
           detail.source = r[:source]
@@ -219,9 +221,19 @@ class ChargebackController < ApplicationController
           detail.metric = r[:metric]
           detail.chargeback_rate_detail_measure_id = r[:chargeback_rate_detail_measure_id]
           detail.chargeback_rate_detail_currency_id = r[:chargeback_rate_detail_currency_id]
-          detail.chargeback_tiers = r.chargeback_tiers
+          r.chargeback_tiers.each_with_index do |t,j|
+            tier = ChargebackTier.new
+            tier.start = t[:start]
+            tier.end = t[:end]
+            tier.fix_rate = t[:fix_rate]
+            tier.var_rate = t[:var_rate]
+            tier.chargeback_rate_detail_id = detail.id
+            @sb[:tiers][i].push(tier) # unless @sb[:tiers][i].include?(tier)
+          end
           @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
-          @sb[:tiers][i].push(detail.chargeback_tiers) unless @sb[:tiers][i].include?(detail.chargeback_tiers)
+          # @sb[:tiers][i] = detail.chargeback_tiers.to_a
+          puts @sb[:tiers][i].length
+          @sb[:num_tiers][i] = @sb[:tiers][i].length
         end
       else
         session[:changed] = false

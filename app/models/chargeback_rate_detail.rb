@@ -6,7 +6,7 @@ class ChargebackRateDetail < ApplicationRecord
   validates :group, :source, :presence => true
   validate :complete_tiers# , on: :create
 
-  #Tiers should be comlete
+  # Set the rates according to the tiers
   def rate(value)
     @fix_rate = 0.0
     @var_rate = 0.0
@@ -125,6 +125,7 @@ class ChargebackRateDetail < ApplicationRecord
     chargeback_rate.rate_type unless chargeback_rate.nil?
   end
 
+  # Check that tiers are complete and disjoint
   def complete_tiers
     cbts = chargeback_tiers
     start = -Float::INFINITY

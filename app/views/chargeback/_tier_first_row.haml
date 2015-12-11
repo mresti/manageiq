@@ -21,8 +21,8 @@
     = text_field_tag("var_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:var_rate],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
-    = button_tag(_("Add"),
-                 :class   => "btn btn-default",
+    = button_tag(_(""),
+                 :class   => "btn btn-default pficon-add-circle-o",
                  :alt     => t = _("Add a new tier"),
                  :title   => t,
                  :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",

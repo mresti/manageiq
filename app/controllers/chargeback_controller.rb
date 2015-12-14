@@ -169,8 +169,9 @@ class ChargebackController < ApplicationController
         rate_detail_error = false
         @sb[:rate_details].each { |detail| rate_detail_error = true if detail.valid? == false}
         if rate_detail_error == false && tier_error == false && @sb[:rate].save
-          @sb[:rate].chargeback_rate_details.each_with_index {|detail, i| detail.chargeback_tiers.replace([])}
-          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save}}  # Save tiers
+          @sb[:rate_details].each { |detail| detail.save}
+          @sb[:rate].chargeback_rate_details.each_with_index {|detail, i| detail.chargeback_tiers.replace([])} # Save rate details 
+          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save}} # Save tiers
           AuditEvent.success(build_saved_audit(@sb[:rate], @edit))
           add_flash(_("%{model} \"%{name}\" was saved") % {:model => ui_lookup(:model => "ChargebackRate"), :name => @sb[:rate].description})
           @edit = session[:edit] = nil  # clean out the saved info

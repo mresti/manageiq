@@ -157,21 +157,21 @@ class ChargebackController < ApplicationController
         end
       else      # for save button
         cb_rate_set_record_vars
-        @sb[:rate].chargeback_rate_details.each_with_index do |detail, i|
+        @sb[:rate].chargeback_rate_details.each_with_index do |_detail, i|
           @sb[:rate_details][i].chargeback_tiers = @sb[:tiers][i]
         end
 
         # Detect errors saving tiers
         tier_error = false
-        @sb[:tiers].each { |tiers| tiers.each { |tier| tier_error = true if tier.valid? == false}}
+        @sb[:tiers].each { |tiers| tiers.each { |tier| tier_error = true if tier.valid? == false } }
 
         # Detect errors saving rate details
         rate_detail_error = false
-        @sb[:rate_details].each { |detail| rate_detail_error = true if detail.valid? == false}
+        @sb[:rate_details].each { |detail| rate_detail_error = true if detail.valid? == false }
         if rate_detail_error == false && tier_error == false && @sb[:rate].save
-          @sb[:rate_details].each { |detail| detail.save}
-          @sb[:rate].chargeback_rate_details.each_with_index {|detail, i| detail.chargeback_tiers.replace([])} # Save rate details 
-          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save}} # Save tiers
+          @sb[:rate_details].each { |detail| detail.save }
+          @sb[:rate].chargeback_rate_details.each { |detail| detail.chargeback_tiers.replace([]) } # Save rate details
+          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save } } # Save tiers
           AuditEvent.success(build_saved_audit(@sb[:rate], @edit))
           add_flash(_("%{model} \"%{name}\" was saved") % {:model => ui_lookup(:model => "ChargebackRate"), :name => @sb[:rate].description})
           @edit = session[:edit] = nil  # clean out the saved info
@@ -209,7 +209,7 @@ class ChargebackController < ApplicationController
         rate_details = rate.chargeback_rate_details.to_a
         rate_details.sort_by! { |rd| [rd.group.downcase, rd.description.downcase] }
         # Create new rate detail records for copied rate record
-        rate_details.each_with_index do |r,i|
+        rate_details.each_with_index do |r, i|
           @sb[:tiers][i] = []
           detail = ChargebackRateDetail.new
           detail.description = r[:description]
@@ -220,7 +220,7 @@ class ChargebackController < ApplicationController
           detail.metric = r[:metric]
           detail.chargeback_rate_detail_measure_id = r[:chargeback_rate_detail_measure_id]
           detail.chargeback_rate_detail_currency_id = r[:chargeback_rate_detail_currency_id]
-          r.chargeback_tiers.each_with_index do |t,j|
+          r.chargeback_tiers.each do |t|
             tier = ChargebackTier.new
             tier.start = t[:start]
             tier.end = t[:end]
@@ -250,7 +250,7 @@ class ChargebackController < ApplicationController
             fixture.each do |cbr|
               if cbr[:rate_type] == x_node.split('-').last
                 rates = cbr.delete(:rates)
-                rates.each_with_index do |r,i|
+                rates.each_with_index do |r, i|
                   detail = ChargebackRateDetail.new
                   tier = ChargebackTier.new
                   @sb[:tiers][i] = []
@@ -381,20 +381,21 @@ class ChargebackController < ApplicationController
     @edit = session[:edit]
     i = params[:id]
     ii = i.to_i
-    @sb[:num_tiers][ii] = @edit[:new][:details][ii][:chargeback_tiers].to_a.length if @edit[:new][:details][ii][:chargeback_tiers]
+    @sb[:num_tiers][ii] =
+        @edit[:new][:details][ii][:chargeback_tiers].to_a.length if @edit[:new][:details][ii][:chargeback_tiers]
     @sb[:num_tiers][ii] = 1 unless @sb[:num_tiers][ii] || @sb[:num_tiers][ii] == 0
     @sb[:num_tiers][ii] += 1
-    pos = @sb[:num_tiers][ii]-2
-    n = pos+1
+    pos = @sb[:num_tiers][ii] - 2
+    n = pos + 1
     @edit[:new][:tiers][ii][n] = {}
     @edit[:new][:tiers][ii][n][:start] = @edit[:new][:tiers][ii][pos][:end]
     @edit[:new][:tiers][ii][n][:end] = Float::INFINITY
     @edit[:new][:tiers][ii][n][:fix_rate] = 0.0
     @edit[:new][:tiers][ii][n][:var_rate] = 0.0
     render :update do |page|
-        page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row") # Update the first row to change the colspan
-        page.insert_html(:after, "rate_detail_row_#{i}_#{pos}", :partial => "tier_row") # Insert the new tier after the last one
-        page << javascript_for_miq_button_visibility(true)
+      page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row") # Update the first row to change the colspan
+      page.insert_html(:after, "rate_detail_row_#{i}_#{pos}", :partial => "tier_row") # Insert the new tier after the last one
+      page << javascript_for_miq_button_visibility(true)
     end
   end
 
@@ -408,12 +409,12 @@ class ChargebackController < ApplicationController
     @sb[:num_tiers][i.to_i] = @sb[:num_tiers][i.to_i] - 1
     render :update do |page|
       page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row")
-      @edit[:new][:tiers][i.to_i].each_with_index do |tier, k|
-        if k>j.to_i
+      @edit[:new][:tiers][i.to_i].each_with_index do |_tier, k|
+        if k > j.to_i
           # Move up tiers not to have blank rows
-          @edit[:new][:tiers][i.to_i][k-1] = @edit[:new][:tiers][i.to_i][k]
+          @edit[:new][:tiers][i.to_i][k - 1] = @edit[:new][:tiers][i.to_i][k]
           @sb[:tier_row] = k
-          page.replace("rate_detail_row_#{i}_#{k-1}", :partial => "tier_row")
+          page.replace("rate_detail_row_#{i}_#{k - 1}", :partial => "tier_row")
           @sb[:tier_row] = nil
         end
       end
@@ -697,10 +698,12 @@ class ChargebackController < ApplicationController
       # Add currencies to chargeback_controller.rb
       @edit[:new][:details][i][:currency] = params[:currency] if params[:currency]
       # Save tiers into @edit
-      for j in 0..@sb[:num_tiers][i].to_i-1
+      (0..@sb[:num_tiers][i].to_i - 1).each do |j|
         @edit [:new][:tiers][i][j] = {} unless @edit[:new][:tiers][i][j]
-        @edit[:new][:tiers][i][j][:fix_rate] = params["fix_rate_#{i}_#{j}".to_sym] if params["fix_rate_#{i}_#{j}".to_sym]
-        @edit[:new][:tiers][i][j][:var_rate] = params["var_rate_#{i}_#{j}".to_sym] if params["var_rate_#{i}_#{j}".to_sym]
+        @edit[:new][:tiers][i][j][:fix_rate] =
+          params["fix_rate_#{i}_#{j}".to_sym] if params["fix_rate_#{i}_#{j}".to_sym]
+        @edit[:new][:tiers][i][j][:var_rate] =
+          params["var_rate_#{i}_#{j}".to_sym] if params["var_rate_#{i}_#{j}".to_sym]
         @edit[:new][:tiers][i][j][:start] = params["start_#{i}_#{j}".to_sym] if params["start_#{i}_#{j}".to_sym]
         @edit[:new][:tiers][i][j][:end] = params["end_#{i}_#{j}".to_sym] if params["end_#{i}_#{j}".to_sym]
       end
@@ -722,7 +725,7 @@ class ChargebackController < ApplicationController
         @sb[:tiers][i][j].fix_rate = @edit[:new][:tiers][i][j][:fix_rate]
         @sb[:tiers][i][j].var_rate = @edit[:new][:tiers][i][j][:var_rate]
         @sb[:tiers][i][j].chargeback_rate_detail_id = @sb[:rate_details][i].id
-        if j>=@sb[:num_tiers][i]
+        if j >= @sb[:num_tiers][i]
           break
         end
       end

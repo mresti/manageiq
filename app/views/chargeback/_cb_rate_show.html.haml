@@ -53,7 +53,7 @@
             = r[:per_time]
           %td{:rowspan => num_tiers}
             = r.per_unit_display
-        - for j in 1..num_tiers.to_i-1
+        - (1..num_tiers.to_i - 1).each do |j|
           - tier = r.chargeback_tiers.to_a[j]
           %tr
             %td

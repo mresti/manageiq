@@ -46,15 +46,12 @@
     %tbody
       %strong
         = _('* Caution: The value Interval end will not be included in the tier.')
-      - if params[:pressed] == "chargeback_rates_edit"
-        - edit = true
       - @sb[:rate_details].each_with_index do |r, i|
         - @cur_group = r[:group] if @cur_group.nil?
         - if @cur_group != r[:group]
           - @cur_group = r[:group]
           %tr
             %td.active{:colspan => "9"} &nbsp;
-        - num_tiers = r.chargeback_tiers.to_a.blank? ? "1" : r.chargeback_tiers.to_a.length.to_s
         - num_tiers = @sb[:tiers][i].blank? ? "1" : @sb[:tiers][i].length.to_s
 
         %tr{:id => "rate_detail_row_#{i}_0"}
@@ -95,8 +92,7 @@
             /if the rate detail have a metric associated, display an options field with per_unit selected
             %td{:rowspan => num_tiers}
               = select_tag("per_unit_#{i}", options_for_select(measure.measures, r.per_unit), "data-miq_observe" => {:url => url}.to_json)
-        - for j in 1..num_tiers.to_i-1
-          - tier = r.chargeback_tiers.to_a[j]
+        - (1..num_tiers.to_i - 1).each do |j|
           - tier = @sb[:tiers][i][j]
           %tr{:id => "rate_detail_row_#{i}_#{j}"}
             %td

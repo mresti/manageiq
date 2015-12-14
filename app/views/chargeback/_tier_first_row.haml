@@ -42,4 +42,3 @@
     /if the rate detail have a metric associated, display an options field with per_unit selected
     %td{:rowspan => n.to_s}
       = select_tag("per_unit_#{i}", options_for_select(measure.measures, r.per_unit), "data-miq_observe" => {:url => url}.to_json)
-  - per_unit = r.per_unit_display

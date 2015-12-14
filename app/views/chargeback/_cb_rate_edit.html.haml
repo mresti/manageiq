@@ -44,6 +44,8 @@
         %th= _("Fixed")
         %th= _("Variable")
     %tbody
+      %strong
+        = _('* Caution: The value Interval end will not be included in the tier.')
       - if params[:pressed] == "chargeback_rates_edit"
         - edit = true
       - @sb[:rate_details].each_with_index do |r, i|

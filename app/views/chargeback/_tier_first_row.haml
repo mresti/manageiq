@@ -33,7 +33,13 @@
     = select_tag("per_time_#{i}",
       options_for_select(per_time_types.invert, @edit[:new][:details][i.to_i][:per_time]),
       "data-miq_observe" => {:url => url}.to_json)
-
+  - measure = @edit[:new][:details][i.to_i][:detail_measure]
+  - if measure.nil?
+    /if the rate detail don't have a metric associated, display the per_unit_display
+    %td{:rowspan => n.to_s}
+      = r.per_unit_display
+  - else
+    /if the rate detail have a metric associated, display an options field with per_unit selected
+    %td{:rowspan => n.to_s}
+      = select_tag("per_unit_#{i}", options_for_select(measure.measures, r.per_unit), "data-miq_observe" => {:url => url}.to_json)
   - per_unit = r.per_unit_display
-  %td{:rowspan => n.to_s}
-    = per_unit

@@ -61,7 +61,7 @@
             = r[:description]
           %td
             = text_field_tag("start_#{i}_0", @edit[:new][:tiers][i][0][:start],
-              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json, :disabled => "disabled")
           %td
             = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i][0][:end],
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)

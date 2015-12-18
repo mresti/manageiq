@@ -8,7 +8,7 @@
       :group: cpu
       :source: used
       :metric: cpu_usagemhz_rate_average
-      :rate: 0.02
+      # :rate: 0.02
       :per_time: daily
       :per_unit: megahertz
       :measure: Hz Units
@@ -17,7 +17,7 @@
       :group: cpu
       :source: allocated
       :metric: derived_vm_numvcpus
-      :rate: 0
+      # :rate: 0
       :per_time: daily
       :per_unit: cpu
       :type_currency: Dollars
@@ -25,7 +25,7 @@
       :group: memory
       :source: used
       :metric: derived_memory_used
-      :rate: 0.02
+      # :rate: 0.02
       :per_time: daily
       :per_unit: megabytes
       :measure: Bytes Units
@@ -34,7 +34,7 @@
       :group: memory
       :source: allocated
       :metric: derived_memory_available
-      :rate: 0
+      # :rate: 0
       :per_time: daily
       :per_unit: megabytes
       :measure: Bytes Units
@@ -43,7 +43,7 @@
       :group: net_io
       :source: used
       :metric: net_usage_rate_average
-      :rate: 0.005
+      # :rate: 0.005
       :per_time: hourly
       :per_unit: kbps
       :measure: Bytes per Second Units
@@ -52,7 +52,7 @@
       :group: disk_io
       :source: used
       :metric: disk_usage_rate_average
-      :rate: 0.005
+      # :rate: 0.005
       :per_time: hourly
       :per_unit: kbps
       :measure: Bytes per Second Units
@@ -60,13 +60,13 @@
     - :description: Fixed Compute Cost 1
       :group: fixed
       :source: compute_1
-      :rate: 0
+      # :rate: 0
       :per_time: daily
       :type_currency: Dollars
     - :description: Fixed Compute Cost 2
       :group: fixed
       :source: compute_2
-      :rate: 0
+      # :rate: 0
       :per_time: monthly
       :type_currency: Dollars
 - :description: Default
@@ -78,7 +78,7 @@
       :group: storage
       :source: allocated
       :metric: derived_vm_allocated_disk_storage
-      :rate: 0
+      # :rate: 0
       :per_time: monthly
       :per_unit: gigabytes
       :measure: Bytes Units
@@ -87,7 +87,7 @@
       :group: storage
       :source: used
       :metric: derived_vm_used_disk_storage
-      :rate: 2.0
+      # :rate: 2.0
       :per_time: monthly
       :per_unit: gigabytes
       :measure: Bytes Units
@@ -95,12 +95,12 @@
     - :description: Fixed Storage Cost 1
       :group: fixed
       :source: storage_1
-      :rate: 0
+      # :rate: 0
       :per_time: daily
       :type_currency: Dollars
     - :description: Fixed Storage Cost 2
       :group: fixed
       :source: storage_2
-      :rate: 0
+      # :rate: 0
       :per_time: monthly
       :type_currency: Dollars

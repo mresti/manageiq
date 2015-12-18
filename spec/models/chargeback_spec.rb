@@ -83,17 +83,32 @@ describe Chargeback do
     subject { Chargeback.build_results_for_report_chargeback(@options).first.first }
 
     it "cpu" do
-      FactoryGirl.create(:chargeback_rate_detail_cpu_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_cpu_allocated,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @count_hourly_rate.to_s,
-                        )
-
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_cpu_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                               )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                               )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_cpu_allocated,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                               )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                               )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
       expect(subject.cpu_allocated_metric).to eq(@cpu_count * @metric_size)
       expect(subject.cpu_used_metric).to eq(@cpu_usagemhz_rate * @metric_size)
       expect(subject.cpu_metric).to eq(subject.cpu_allocated_metric + subject.cpu_used_metric)
@@ -104,16 +119,32 @@ describe Chargeback do
     end
 
     it "memory" do
-      FactoryGirl.create(:chargeback_rate_detail_memory_allocated,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_memory_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_memory_allocated,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_memory_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.memory_allocated_metric).to eq(@memory_available * @metric_size)
       expect(subject.memory_used_metric).to eq(@memory_used * @metric_size)
@@ -125,11 +156,19 @@ describe Chargeback do
     end
 
     it "disk io" do
-      FactoryGirl.create(:chargeback_rate_detail_disk_io_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_disk_io_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.disk_io_used_metric).to eq(@disk_usage_rate * @metric_size)
       expect(subject.disk_io_metric).to eq(subject.disk_io_metric)
@@ -139,11 +178,19 @@ describe Chargeback do
     end
 
     it "net io" do
-      FactoryGirl.create(:chargeback_rate_detail_net_io_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_net_io_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.net_io_used_metric).to eq(@net_usage_rate * @metric_size)
       expect(subject.net_io_metric).to eq(subject.net_io_metric)
@@ -154,22 +201,38 @@ describe Chargeback do
 
     it "storage" do
       cbdm = FactoryGirl.create(:chargeback_rate_detail_measure_bytes)
-      FactoryGirl.create(:chargeback_rate_detail_storage_used,
-                         :chargeback_rate_id                => @cbr.id,
-                         :per_time                          => "hourly",
-                         :metric                            => "derived_vm_used_disk_storage",
-                         :per_unit                          => "gigabytes",
-                         :rate                              => @count_hourly_rate.to_s,
-                         :chargeback_rate_detail_measure_id => cbdm.id
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_storage_allocated,
-                         :chargeback_rate_id                => @cbr.id,
-                         :per_time                          => "hourly",
-                         :per_unit                          => "gigabytes",
-                         :rate                              => @count_hourly_rate.to_s,
-                         :metric                            => "derived_vm_allocated_disk_storage",
-                         :chargeback_rate_detail_measure_id => cbdm.id
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_storage_used,
+                               :chargeback_rate_id                => @cbr.id,
+                               :per_time                          => "hourly",
+                               :metric                            => "derived_vm_used_disk_storage",
+                               :per_unit                          => "gigabytes",
+                               :chargeback_rate_detail_measure_id => cbdm.id
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_storage_allocated,
+                               :chargeback_rate_id                => @cbr.id,
+                               :per_time                          => "hourly",
+                               :per_unit                          => "gigabytes",
+                               :metric                            => "derived_vm_allocated_disk_storage",
+                               :chargeback_rate_detail_measure_id => cbdm.id
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.storage_allocated_metric).to eq(@vm_allocated_disk_storage.gigabytes * @metric_size)
       expect(subject.storage_used_metric).to eq(@vm_used_disk_storage.gigabytes * @metric_size)
@@ -216,16 +279,32 @@ describe Chargeback do
     subject { Chargeback.build_results_for_report_chargeback(@options).first.first }
 
     it "cpu" do
-      FactoryGirl.create(:chargeback_rate_detail_cpu_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_cpu_allocated,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @count_hourly_rate.to_s,
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_cpu_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_cpu_allocated,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.cpu_allocated_metric).to eq(@cpu_count * @metric_size)
       expect(subject.cpu_used_metric).to eq(@cpu_usagemhz_rate * @metric_size)
@@ -237,17 +316,32 @@ describe Chargeback do
     end
 
     it "memory" do
-      FactoryGirl.create(:chargeback_rate_detail_memory_allocated,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_memory_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_memory_allocated,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_memory_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
       expect(subject.memory_allocated_metric).to eq(@memory_available * @metric_size)
       expect(subject.memory_used_metric).to eq(@memory_used * @metric_size)
       expect(subject.memory_metric).to eq(subject.memory_allocated_metric + subject.memory_used_metric)
@@ -258,11 +352,19 @@ describe Chargeback do
     end
 
     it "disk io" do
-      FactoryGirl.create(:chargeback_rate_detail_disk_io_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_disk_io_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
 
       expect(subject.disk_io_used_metric).to eq(@disk_usage_rate * @metric_size)
       expect(subject.disk_io_metric).to eq(subject.disk_io_metric)
@@ -272,12 +374,19 @@ describe Chargeback do
     end
 
     it "net io" do
-      FactoryGirl.create(:chargeback_rate_detail_net_io_used,
-                         :chargeback_rate_id => @cbr.id,
-                         :per_time           => "hourly",
-                         :rate               => @hourly_rate.to_s,
-                        )
-
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_net_io_used,
+                               :chargeback_rate_id => @cbr.id,
+                               :per_time           => "hourly"
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
       expect(subject.net_io_used_metric).to eq(@net_usage_rate * @metric_size)
       expect(subject.net_io_metric).to eq(subject.net_io_metric)
 
@@ -287,19 +396,34 @@ describe Chargeback do
 
     it "storage" do
       cbdm = FactoryGirl.create(:chargeback_rate_detail_measure_bytes)
-      FactoryGirl.create(:chargeback_rate_detail_storage_used,
-                         :chargeback_rate_id                => @cbr.id,
-                         :per_time                          => "hourly",
-                         :rate                              => @count_hourly_rate.to_s,
-                         :chargeback_rate_detail_measure_id => cbdm.id
-                        )
-      FactoryGirl.create(:chargeback_rate_detail_storage_allocated,
-                         :chargeback_rate_id                => @cbr.id,
-                         :per_time                          => "hourly",
-                         :rate                              => @count_hourly_rate.to_s,
-                         :chargeback_rate_detail_measure_id => cbdm.id
-                        )
-
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_storage_used,
+                               :chargeback_rate_id                => @cbr.id,
+                               :per_time                          => "hourly",
+                               :chargeback_rate_detail_measure_id => cbdm.id
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
+      cbrd = FactoryGirl.build(:chargeback_rate_detail_storage_allocated,
+                               :chargeback_rate_id                => @cbr.id,
+                               :per_time                          => "hourly",
+                               :chargeback_rate_detail_measure_id => cbdm.id
+                              )
+      cbt = FactoryGirl.create(:chargeback_tier,
+                               :chargeback_rate_detail_id => cbrd.id,
+                               :start                     => -Float::INFINITY,
+                               :end                       => Float::INFINITY,
+                               :fix_rate                  => 0.0,
+                               :var_rate                  => @count_hourly_rate.to_s
+                              )
+      cbrd.chargeback_tiers = [cbt]
+      cbrd.save
       expect(subject.storage_allocated_metric).to eq(@vm_allocated_disk_storage.gigabytes * @metric_size)
       expect(subject.storage_used_metric).to eq(@vm_used_disk_storage.gigabytes * @metric_size)
       expect(subject.storage_metric).to eq(subject.storage_allocated_metric + subject.storage_used_metric)

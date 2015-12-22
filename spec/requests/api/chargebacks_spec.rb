@@ -65,7 +65,7 @@ RSpec.describe "chargebacks API" do
       "chargeback_rate_id" => chargeback_rate.id,
       "href"               => "#{chargebacks_url(chargeback_rate.id)}/rates/#{chargeback_rate_detail.to_param}",
       "id"                 => chargeback_rate_detail.id,
-      "description"               => "rate_1"
+      "description"        => "rate_1"
     )
     expect_request_success
   end

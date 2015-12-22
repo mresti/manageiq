@@ -112,7 +112,7 @@ describe ChargebackRateDetail do
     cbd.update(:chargeback_tiers => [cbt1, cbt2, cbt3])
     expect(cbd.friendly_rate).to eq("Monthly @ 0.0 + 0.0 per Megabytes from -Infinity to 0.0\n\
 Monthly @ 1.0 + 2.0 per Megabytes from 0.0 to 5.0\n\
-Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity"
+Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity")
   end
 
   it "#per_unit_display_without_measurements" do

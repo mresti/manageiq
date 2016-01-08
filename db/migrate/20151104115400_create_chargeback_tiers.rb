@@ -7,7 +7,7 @@ class CreateChargebackTiers < ActiveRecord::Migration
       t.float :fix_rate
       t.float :var_rate
 
-      t.timestamps null: false
+      t.timestamp :null => false
     end
   end
 end

@@ -77,10 +77,10 @@ RSpec.describe "chargebacks API" do
 
       expect do
         run_post rates_url,
-                 :description    => "rate_0",
-                 :group   => "fixed",
-                 :source  => "used",
-                 :enabled => true
+                 :description => "rate_0",
+                 :group       => "fixed",
+                 :source      => "used",
+                 :enabled     => true
       end.to change(ChargebackRateDetail, :count).by(1)
       expect_result_to_match_hash(@result["results"].first, "description" => "rate_0", "enabled" => true)
       expect_request_success
@@ -91,8 +91,8 @@ RSpec.describe "chargebacks API" do
 
       expect do
         run_post rates_url,
-                 :rate    => "0",
-                 :enabled => true
+                 :description => "rate_0",
+                 :enabled     => true
       end.not_to change(ChargebackRateDetail, :count)
       expect_bad_request(/group can't be blank/i)
       expect_bad_request(/source can't be blank/i)

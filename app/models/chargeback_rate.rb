@@ -128,6 +128,9 @@ class ChargebackRate < ApplicationRecord
           if currency
             rate_detail[:chargeback_rate_detail_currency_id] = currency.id
           end
+          cbt = ChargebackTier.create(:start => -Float::INFINITY,
+                                      :end => Float::INFINITY, :fix_rate => 0.0, :var_rate => 0.0)
+          rate_detail[:chargeback_tiers] = [cbt]
         end
         if rec.nil?
           _log.info("Creating [#{cbr[:description]}] with guid=[#{cbr[:guid]}]")

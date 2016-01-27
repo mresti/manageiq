@@ -4,13 +4,13 @@ class ChargebackRateDetail < ApplicationRecord
   belongs_to :detail_currency, :class_name => "ChargebackRateDetailCurrency", :foreign_key => :chargeback_rate_detail_currency_id
   has_many :chargeback_tiers, :dependent => :destroy
   validates :group, :source, :presence => true
-  validate :complete_tiers
+  # validate :complete_tiers
 
   # Set the rates according to the tiers
   def rate(value)
     @fix_rate = 0.0
     @var_rate = 0.0
-    ChargebackTier.where(:chargeback_rate_detail_id => id).each do |tier|
+    chargeback_tiers.each do |tier|
       next if value < tier.start
       next if value >= tier.end
       @fix_rate = tier.fix_rate

@@ -11,12 +11,13 @@ describe ChargebackRateDetail do
                              :per_time => per_time,
                              :per_unit => per_unit,
                              :enabled  => true)
-    FactoryGirl.create(:chargeback_tier,
-                       :chargeback_rate_detail_id => cbd.id,
-                       :start                     => tier_start,
-                       :end                       => tier_end,
-                       :fix_rate                  => fix_rate,
-                       :var_rate                  => var_rate)
+    cbt = FactoryGirl.create(:chargeback_tier,
+                              :chargeback_rate_detail_id => cbd.id,
+                              :start                     => tier_start,
+                              :end                       => tier_end,
+                              :fix_rate                  => fix_rate,
+                              :var_rate                  => var_rate)
+    cbd.update(:chargeback_tiers => [cbt])
     expect(cbd.cost(cvalue)).to eq(cvalue * cbd.hourly_rate + cbd.hourly(fix_rate))
 
     cbd.group = 'fixed'
@@ -92,8 +93,9 @@ describe ChargebackRateDetail do
     expect(cbd.friendly_rate).to eq(friendly_rate)
 
     cbd = FactoryGirl.build(:chargeback_rate_detail, :group => 'fixed', :per_time => 'monthly')
-    FactoryGirl.create(:chargeback_tier, :start => -Float::INFINITY, :chargeback_rate_detail_id =>  cbd.id,
+    cbt = FactoryGirl.create(:chargeback_tier, :start => -Float::INFINITY, :chargeback_rate_detail_id =>  cbd.id,
                        :end => Float::INFINITY, :fix_rate => 1.0, :var_rate => 2.0)
+    cbd.update(:chargeback_tiers => [cbt])
     expect(cbd.friendly_rate).to eq("3.0 Monthly")
 
     cbd = FactoryGirl.build(:chargeback_rate_detail, :per_unit => 'cpu', :per_time => 'monthly')

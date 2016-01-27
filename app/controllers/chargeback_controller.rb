@@ -252,7 +252,6 @@ class ChargebackController < ApplicationController
                 rates = cbr.delete(:rates)
                 rates.each_with_index do |r, i|
                   detail = ChargebackRateDetail.new
-                  tier = ChargebackTier.new
                   @sb[:tiers][i] = []
                   detail.description = r[:description]
                   detail.source = r[:source]
@@ -262,11 +261,17 @@ class ChargebackController < ApplicationController
                   detail.group = r[:group]
                   detail.per_unit = r[:per_unit]
                   detail.metric = r[:metric]
-                  tier.start = -Float::INFINITY
-                  tier.end = Float::INFINITY
-                  tier.fix_rate = 0.0
-                  tier.var_rate = 0.0
-                  tier.chargeback_rate_detail_id = detail.id
+                  tiers = r.delete(:tiers)
+                  rate_tiers = []
+                  tiers.each_with_index do |t,i|
+                    tier = ChargebackTier.new
+                    tier.start = t.delete(:start)
+                    tier.end = t.delete(:end)
+                    tier.fix_rate = t.delete(:fix_rate)
+                    tier.var_rate = t.delete(:var_rate)
+                    tier.chargeback_rate_detail_id = detail.id
+                    rate_tiers.append(tier)
+                  end
                   # if the rate detail has a measure associated
                   unless r[:measure].nil?
                     # Copy the measure id of the rate_detail linkig with the rate_detail_measure
@@ -279,7 +284,7 @@ class ChargebackController < ApplicationController
                     detail.chargeback_rate_detail_currency_id = id_currency
                   end
                   @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
-                  @sb[:tiers][i].push(tier)
+                  @sb[:tiers][i] = rate_tiers
                 end
               end
             end

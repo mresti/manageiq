@@ -12,6 +12,15 @@
       :per_unit: megahertz
       :measure: Hz Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.02
     - :description: Allocated CPU Count
       :group: cpu
       :source: allocated
@@ -19,6 +28,15 @@
       :per_time: daily
       :per_unit: cpu
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 1.0
+          :var_rate: 0.0
     - :description: Used Memory
       :group: memory
       :source: used
@@ -27,6 +45,15 @@
       :per_unit: megabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.02
     - :description: Allocated Memory
       :group: memory
       :source: allocated
@@ -35,6 +62,11 @@
       :per_unit: megabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.0
     - :description: Used Network I/O
       :group: net_io
       :source: used
@@ -43,6 +75,19 @@
       :per_unit: kbps
       :measure: Bytes per Second Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: 100
+          :fix_rate: 0.5
+          :var_rate: 0.0
+        - :start: 100
+          :end: Infinity
+          :fix_rate: 0.5
+          :var_rate: 0.005
     - :description: Used Disk I/O
       :group: disk_io
       :source: used
@@ -51,16 +96,35 @@
       :per_unit: kbps
       :measure: Bytes per Second Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.005
     - :description: Fixed Compute Cost 1
       :group: fixed
       :source: compute_1
       :per_time: daily
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.0
     - :description: Fixed Compute Cost 2
       :group: fixed
       :source: compute_2
       :per_time: monthly
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.0
 - :description: Default
   :guid: 7d7aaf20-5214-11df-a888-001d09066d98
   :rate_type: Storage
@@ -74,6 +138,15 @@
       :per_unit: gigabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 1.0
+          :var_rate: 0.0
     - :description: Used Disk Storage
       :group: storage
       :source: used
@@ -82,13 +155,32 @@
       :per_unit: gigabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: 0
+          :fix_rate: 0.0
+          :var_rate: 0.0
+        - :start: 0
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 2.0
     - :description: Fixed Storage Cost 1
       :group: fixed
       :source: storage_1
       :per_time: daily
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.0
     - :description: Fixed Storage Cost 2
       :group: fixed
       :source: storage_2
       :per_time: monthly
       :type_currency: Dollars
+      :tiers:
+        - :start: -Infinity
+          :end: Infinity
+          :fix_rate: 0.0
+          :var_rate: 0.0

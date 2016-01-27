@@ -263,7 +263,7 @@ class ChargebackController < ApplicationController
                   detail.metric = r[:metric]
                   tiers = r.delete(:tiers)
                   rate_tiers = []
-                  tiers.each_with_index do |t,i|
+                  tiers.each do |t|
                     tier = ChargebackTier.new
                     tier.start = t.delete(:start)
                     tier.end = t.delete(:end)
@@ -415,13 +415,12 @@ class ChargebackController < ApplicationController
     render :update do |page|
       page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row")
       @edit[:new][:tiers][i.to_i].each_with_index do |_tier, k|
-        if k > j.to_i
-          # Move up tiers not to have blank rows
-          @edit[:new][:tiers][i.to_i][k - 1] = @edit[:new][:tiers][i.to_i][k]
-          @sb[:tier_row] = k
-          page.replace("rate_detail_row_#{i}_#{k - 1}", :partial => "tier_row")
-          @sb[:tier_row] = nil
-        end
+        next if k <= j.to_i
+        # Move up tiers not to have blank rows
+        @edit[:new][:tiers][i.to_i][k - 1] = @edit[:new][:tiers][i.to_i][k]
+        @sb[:tier_row] = k
+        page.replace("rate_detail_row_#{i}_#{k - 1}", :partial => "tier_row")
+        @sb[:tier_row] = nil
       end
       # Delete the last row
       page.replace("rate_detail_row_#{i}_#{@sb[:num_tiers][i.to_i]}", '')

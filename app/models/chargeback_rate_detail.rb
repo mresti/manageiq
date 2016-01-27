@@ -4,10 +4,10 @@ class ChargebackRateDetail < ApplicationRecord
   belongs_to :detail_currency, :class_name => "ChargebackRateDetailCurrency", :foreign_key => :chargeback_rate_detail_currency_id
   has_many :chargeback_tiers, :dependent => :destroy
   validates :group, :source, :presence => true
-  # validate :complete_tiers
+  validate :complete_tiers
 
   # Set the rates according to the tiers
-  def rate(value)
+  def find_rate(value)
     @fix_rate = 0.0
     @var_rate = 0.0
     chargeback_tiers.each do |tier|
@@ -22,7 +22,7 @@ class ChargebackRateDetail < ApplicationRecord
   def cost(value)
     return 0.0 unless self.enabled?
     value = 1 if group == 'fixed'
-    rate(value)
+    find_rate(value)
     hourly(@fix_rate) + hourly(@var_rate) * value
   end
 
@@ -38,7 +38,7 @@ class ChargebackRateDetail < ApplicationRecord
   end
 
   def hourly_rate
-    rate(0.0)
+    find_rate(0.0)
     rate = @var_rate
     return 0.0 if rate.zero?
 
@@ -97,7 +97,7 @@ class ChargebackRateDetail < ApplicationRecord
   end
 
   def friendly_rate
-    rate(0.0)
+    find_rate(0.0)
     value = read_attribute(:friendly_rate)
     return value unless value.nil?
 

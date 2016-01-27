@@ -4,13 +4,13 @@ class ChargebackTier < ActiveRecord::Base
 
   def self.to_float(s)
     if s.to_s.include?("Infinity")
-      if s[0] = "-"
-        f = -Float::INFINITY
+      if s[0] == "-"
+        -Float::INFINITY
       else
-        f = Float::INFINITY
+        Float::INFINITY
       end
     else
-      f = s
+      s
     end
   end
 end

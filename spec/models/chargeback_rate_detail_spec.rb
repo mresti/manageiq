@@ -12,11 +12,11 @@ describe ChargebackRateDetail do
                              :per_unit => per_unit,
                              :enabled  => true)
     cbt = FactoryGirl.create(:chargeback_tier,
-                              :chargeback_rate_detail_id => cbd.id,
-                              :start                     => tier_start,
-                              :end                       => tier_end,
-                              :fix_rate                  => fix_rate,
-                              :var_rate                  => var_rate)
+                             :chargeback_rate_detail_id => cbd.id,
+                             :start                     => tier_start,
+                             :end                       => tier_end,
+                             :fix_rate                  => fix_rate,
+                             :var_rate                  => var_rate)
     cbd.update(:chargeback_tiers => [cbt])
     expect(cbd.cost(cvalue)).to eq(cvalue * cbd.hourly_rate + cbd.hourly(fix_rate))
 

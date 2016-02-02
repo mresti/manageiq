@@ -291,7 +291,6 @@ class ChargebackController < ApplicationController
           end
         end
       end
-      @sb[:rate_details].sort_by! { |rd| [rd[:group].downcase, rd[:description].downcase] }
       cb_rate_set_form_vars
       @in_a_form = true
       if params[:button] == "reset"

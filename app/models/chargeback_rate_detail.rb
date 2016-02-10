@@ -4,6 +4,7 @@ class ChargebackRateDetail < ApplicationRecord
 
   validates :rate, :numericality => true
   validates :group, :source, :presence => true
+  validate  :correct_range_not_overlap
 
   def cost(value)
     return 0.0 unless self.enabled?
@@ -90,5 +91,15 @@ class ChargebackRateDetail < ApplicationRecord
   def rate_type
     # Return parent's rate type
     chargeback_rate.rate_type unless chargeback_rate.nil?
+  end
+
+  private def correct_range_not_overlap
+    if !start_date.nil? && !end_date.nil?
+      unless (start_date <= end_date)
+        errors.add("Date range problems", "Date ranges should not overlap")
+      end
+    elsif (start_date.nil? && !end_date.nil?) || (!start_date.nil? && end_date.nil?)
+        errors.add("Date range problems", "Date ranges should have two valid dates")
+    end
   end
 end

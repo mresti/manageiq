@@ -144,4 +144,36 @@ describe ChargebackRateDetail do
                                       )
     expect(cbd_bytes.cost(100)).to eq(cbd_gigabytes.cost(100))
   end
+
+
+  it "should_have_a_valid_date_range" do
+    expect(FactoryGirl.build(:chargeback_rate_detail,
+                             :start_date =>  Date.today,
+                             :end_date   =>  Date.today - 1
+                            )).not_to be_valid
+
+    expect(FactoryGirl.build(:chargeback_rate_detail,
+                             :start_date =>  Date.today
+                            )).not_to be_valid
+
+    expect(FactoryGirl.build(:chargeback_rate_detail,
+                             :end_date =>  Date.today
+                            )).not_to be_valid
+
+    expect(FactoryGirl.build(:chargeback_rate_detail)).to be_valid
+  end
+
+    # it "for_the_same_rate_dont_overlap_the_range" do
+    #   cbrd1 = FactoryGirl.create(:chargeback_rate_detail,
+    #                              :chargeback_rate_id                  =>  1,
+    #                              :start_date                          =>  Date.today,
+    #                              :end_date                            =>  Date.today + 10
+    #                             )
+    #   cbrd2 = FactoryGirl.create(:chargeback_rate_detail,
+    #                              :chargeback_rate_id                  =>  1,
+    #                              :start_date                          =>  Date.today + 5,
+    #                              :end_date                            =>  Date.today + 10
+    #                             )
+    #   expect(cbrd2).not_to be_valid
+    # end
 end

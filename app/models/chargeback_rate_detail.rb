@@ -4,7 +4,7 @@ class ChargebackRateDetail < ApplicationRecord
   belongs_to :detail_currency, :class_name => "ChargebackRateDetailCurrency", :foreign_key => :chargeback_rate_detail_currency_id
   has_many :chargeback_tiers, :dependent => :destroy
   validates :group, :source, :presence => true
-  validate :complete_tiers
+  validate :complete_tiers, :if => "!respond_to?(:rate)"
 
   # Set the rates according to the tiers
   def find_rate(value)

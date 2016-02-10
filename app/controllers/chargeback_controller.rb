@@ -283,6 +283,17 @@ class ChargebackController < ApplicationController
 
   def cb_rate_show
     @display = "main"
+    @sb[:date_ranges] = []
+    @record.chargeback_rate_details.group_by(&:start_date).each do |range_group|
+      if range_group[0].nil?
+        @sb[:date_ranges].push('Active')
+      else
+        @sb[:date_ranges].push(
+          :start_date => range_group[0],
+          :end_date => range_group[1][0].end_date
+        )
+      end
+    end
     @sb[:selected_rate_details] = @record.chargeback_rate_details.to_a
     @sb[:selected_rate_details].sort_by! { |rd| [rd[:group].downcase, rd[:description].downcase] }
     if @record.nil?

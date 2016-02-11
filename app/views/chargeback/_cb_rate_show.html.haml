@@ -26,43 +26,43 @@
         %th= _("Fixed")
         %th= _("Variable")
     %tbody
-      - @sb[:selected_rate_details].each do |r|
-        - @cur_group = r[:group] if @cur_group.nil?
-        - if @cur_group != r[:group]
-          - @cur_group = r[:group]
+      - @sb[:selected_rate_details].each do |detail|
+        - @cur_group = detail[:group] if @cur_group.nil?
+        - if @cur_group != detail[:group]
+          - @cur_group = detail[:group]
           %tr
             %td.active{:colspan => "9"} &nbsp;
-        - num_tiers = r.chargeback_tiers.to_a.blank? ? "1" : r.chargeback_tiers.to_a.length.to_s
+        - num_tiers = detail.chargeback_tiers.to_a.blank? ? "1" : detail.chargeback_tiers.to_a.length.to_s
         %tr
           %td{:rowspan => num_tiers}
-            = h(rate_detail_group(r[:group]))
+            = h(rate_detail_group(detail[:group]))
           %td{:rowspan => num_tiers}
-            = r[:description]
-          - tier = r.chargeback_tiers.first
+            = detail[:description]
+          - tier = detail.chargeback_tiers.first
           %td
             = tier.start ? tier.start : (-Float::INFINITY).to_s
           %td
             = tier.end ? tier.end : Float::INFINITY.to_s
           %td{:align => "right"}
-            = tier.fix_rate ? tier.fix_rate : 0.0
+            = tier.fixed_rate ? tier.fixed_rate : 0.0
           %td{:align => "right"}
-            = tier.var_rate ? tier.var_rate : 0.0
+            = tier.variable_rate ? tier.variable_rate : 0.0
           %td{:rowspan => num_tiers}
-            = "#{r.detail_currency.symbol} [#{r.detail_currency.code}]"
+            = "#{detail.detail_currency.symbol} [#{detail.detail_currency.code}]"
           %td{:rowspan => num_tiers}
-            = r[:per_time]
+            = detail[:per_time]
           %td{:rowspan => num_tiers}
-            = r.per_unit_display
-        - (1..num_tiers.to_i - 1).each do |j|
-          - tier = r.chargeback_tiers.to_a[j]
+            = detail.per_unit_display
+        - (1..num_tiers.to_i - 1).each do |tier_index|
+          - tier = detail.chargeback_tiers.to_a[tier_index]
           %tr
             %td
               = tier.start
             %td
               = tier.end
             %td{:align => "right"}
-              = tier.fix_rate
+              = tier.fixed_rate
             %td{:align => "right"}
-              = tier.var_rate
+              = tier.variable_rate
         %tr
           %td{:colspan => "9"}

@@ -9,8 +9,8 @@ describe RemoveRateFromChargebackRateDetail do
       migrate
       cbrd.reload
       expect(cbrd.chargeback_tiers.length).to eq(2)
-      expect(cbrd.chargeback_tiers[1].fix_rate).to eq(0.0)
-      expect(cbrd.chargeback_tiers[1].var_rate).to eq(1.0)
+      expect(cbrd.chargeback_tiers[1].fixed_rate).to eq(0.0)
+      expect(cbrd.chargeback_tiers[1].variable_rate).to eq(1.0)
     end
   end
 end

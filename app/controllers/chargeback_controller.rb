@@ -157,21 +157,23 @@ class ChargebackController < ApplicationController
         end
       else      # for save button
         cb_rate_set_record_vars
-        @sb[:rate].chargeback_rate_details.each_with_index do |_detail, i|
-          @sb[:rate_details][i].chargeback_tiers = @sb[:tiers][i]
-        end
 
         # Detect errors saving tiers
-        tier_error = false
-        @sb[:tiers].each { |tiers| tiers.each { |tier| tier_error = true if tier.valid? == false } }
+        tiers_valid = @sb[:tiers].all? { |tiers| tiers.all?(&:valid?) }
 
+        # Replace the tiers
+        if tiers_valid
+          @sb[:rate].chargeback_rate_details.each_with_index do |_detail, i|
+            @sb[:rate_details][i].chargeback_tiers = @sb[:tiers][i]
+          end
+        end
         # Detect errors saving rate details
-        rate_detail_error = false
-        @sb[:rate_details].each { |detail| rate_detail_error = true if detail.valid? == false }
-        if rate_detail_error == false && tier_error == false && @sb[:rate].save
-          @sb[:rate_details].each { |detail| detail.save }
-          @sb[:rate].chargeback_rate_details.each { |detail| detail.chargeback_tiers.replace([]) } # Save rate details
-          @sb[:tiers].each { |tiers| tiers.each { |tier| tier.save } } # Save tiers
+        rate_details_valid = @sb[:rate_details].all?(&:valid?)
+
+        if rate_details_valid && tiers_valid && @sb[:rate].save
+          @sb[:rate_details].each(&:save)
+          @sb[:rate].chargeback_rate_details.each { |detail| detail.chargeback_tiers = [] } # Clear the chargeback tiers
+          @sb[:tiers].each { |tiers| tiers.each(&:save) } # Save tiers
           AuditEvent.success(build_saved_audit(@sb[:rate], @edit))
           add_flash(_("%{model} \"%{name}\" was saved") % {:model => ui_lookup(:model => "ChargebackRate"), :name => @sb[:rate].description})
           @edit = session[:edit] = nil  # clean out the saved info
@@ -183,9 +185,11 @@ class ChargebackController < ApplicationController
             add_flash("#{field.to_s.capitalize} #{msg}", :error)
           end
           @sb[:rate_details].each do |detail|
-            detail.errors.each { |field, msg| add_flash("'#{detail.description}' #{field.to_s.capitalize} #{msg}", :error) }
-            detail.chargeback_tiers.each do |tier|
-              tier.errors.each { |field, msg| add_flash("'#{detail.description}' #{field.to_s.capitalize} #{msg}", :error) }
+            display_detail_errors(detail, detail.errors)
+          end
+          @sb[:tiers].each_with_index do |tiers, detail_index|
+            tiers.each do |tier|
+              display_detail_errors(@sb[:rate_details][detail_index], tier.errors)
             end
           end
           @changed = session[:changed] = (@edit[:new] != @edit[:current])
@@ -209,28 +213,26 @@ class ChargebackController < ApplicationController
         rate_details = rate.chargeback_rate_details.to_a
         rate_details.sort_by! { |rd| [rd.group.downcase, rd.description.downcase] }
         # Create new rate detail records for copied rate record
-        rate_details.each_with_index do |r, i|
-          @sb[:tiers][i] = []
-          detail = ChargebackRateDetail.new
-          detail.description = r[:description]
-          detail.source = r[:source]
-          detail.per_time = r[:per_time]
-          detail.group = r[:group]
-          detail.per_unit = r[:per_unit]
-          detail.metric = r[:metric]
-          detail.chargeback_rate_detail_measure_id = r[:chargeback_rate_detail_measure_id]
-          detail.chargeback_rate_detail_currency_id = r[:chargeback_rate_detail_currency_id]
-          r.chargeback_tiers.each do |t|
-            tier = ChargebackTier.new
-            tier.start = t[:start]
-            tier.end = t[:end]
-            tier.fix_rate = t[:fix_rate]
-            tier.var_rate = t[:var_rate]
-            tier.chargeback_rate_detail_id = detail.id
-            @sb[:tiers][i].push(tier)
+        rate_details.each_with_index do |detail, detail_index|
+          @sb[:tiers][detail_index] = []
+          detail_copy = ChargebackRateDetail.new(:description                        => detail[:description],
+                                                 :source                             => detail[:source],
+                                                 :per_time                           => detail[:per_time],
+                                                 :group                              => detail[:group],
+                                                 :per_unit                           => detail[:per_unit],
+                                                 :metric                             => detail[:metric],
+                                                 :chargeback_rate_detail_measure_id  => detail[:chargeback_rate_detail_measure_id],
+                                                 :chargeback_rate_detail_currency_id => detail[:chargeback_rate_detail_currency_id])
+          detail.chargeback_tiers.each do |tier|
+            tier_copy = ChargebackTier.new(:start                     => tier[:start],
+                                           :end                       => tier[:end],
+                                           :fixed_rate                => tier[:fixed_rate],
+                                           :variable_rate             => tier[:variable_rate],
+                                           :chargeback_rate_detail_id => detail_copy.id)
+            @sb[:tiers][detail_index].push(tier_copy)
           end
-          @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
-          @sb[:num_tiers][i] = @sb[:tiers][i].length
+          @sb[:rate_details].push(detail_copy) unless @sb[:rate_details].include?(detail_copy)
+          @sb[:num_tiers][detail_index] = @sb[:tiers][detail_index].size
         end
       else
         session[:changed] = false
@@ -250,41 +252,37 @@ class ChargebackController < ApplicationController
             fixture.each do |cbr|
               if cbr[:rate_type] == x_node.split('-').last
                 rates = cbr.delete(:rates)
-                rates.each_with_index do |r, i|
-                  detail = ChargebackRateDetail.new
-                  @sb[:tiers][i] = []
-                  detail.description = r[:description]
-                  detail.source = r[:source]
-                  # detail.rate = r[:rate]
-                  # detail.per_time = r[:per_time]
-                  detail.per_time = "hourly"
-                  detail.group = r[:group]
-                  detail.per_unit = r[:per_unit]
-                  detail.metric = r[:metric]
-                  tiers = r.delete(:tiers)
+                rates.each_with_index do |detail, detail_index|
+                  detail_new = ChargebackRateDetail.new(:description => detail[:description],
+                                                        :source      => detail[:source],
+                                                        :per_time    => detail[:per_time],
+                                                        :group       => detail[:group],
+                                                        :per_unit    => detail[:per_unit],
+                                                        :metric      => detail[:metric])
+                  @sb[:tiers][detail_index] = []
+                  tiers = detail.delete(:tiers)
                   rate_tiers = []
-                  tiers.each do |t|
-                    tier = ChargebackTier.new
-                    tier.start = t.delete(:start)
-                    tier.end = t.delete(:end)
-                    tier.fix_rate = t.delete(:fix_rate)
-                    tier.var_rate = t.delete(:var_rate)
-                    tier.chargeback_rate_detail_id = detail.id
-                    rate_tiers.append(tier)
+                  tiers.each do |tier|
+                    tier_new = ChargebackTier.new(:start                     => tier.delete(:start),
+                                                  :end                       => tier.delete(:end),
+                                                  :fixed_rate                => tier.delete(:fixed_rate),
+                                                  :variable_rate             => tier.delete(:variable_rate),
+                                                  :chargeback_rate_detail_id => detail_new.id)
+                    rate_tiers.append(tier_new)
                   end
                   # if the rate detail has a measure associated
-                  unless r[:measure].nil?
+                  unless detail[:measure].nil?
                     # Copy the measure id of the rate_detail linkig with the rate_detail_measure
-                    id_measure = ChargebackRateDetailMeasure.find_by(:name => r[:measure]).id
-                    detail.chargeback_rate_detail_measure_id = id_measure
+                    id_measure = ChargebackRateDetailMeasure.find_by(:name => detail[:measure]).id
+                    detail_new.chargeback_rate_detail_measure_id = id_measure
                   end
                   # Copy the currency id of the rate detail linking with the rate_detail_currency
-                  if r[:type_currency]
-                    id_currency = ChargebackRateDetailCurrency.find_by(:name => r[:type_currency]).id
+                  if detail[:type_currency]
+                    id_currency = ChargebackRateDetailCurrency.find_by(:name => detail[:type_currency]).id
                     detail.chargeback_rate_detail_currency_id = id_currency
                   end
-                  @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
-                  @sb[:tiers][i] = rate_tiers
+                  @sb[:rate_details].push(detail_new) unless @sb[:rate_details].include?(detail_new)
+                  @sb[:tiers][detail_index] = rate_tiers
                 end
               end
             end
@@ -383,51 +381,39 @@ class ChargebackController < ApplicationController
   # Add a new tier at the end
   def cb_tier_add
     @edit = session[:edit]
-    i = params[:id]
-    ii = i.to_i
+    detail_index = params[:detail_index]
+    ii = detail_index.to_i
     @sb[:num_tiers][ii] =
         @edit[:new][:details][ii][:chargeback_tiers].to_a.length if @edit[:new][:details][ii][:chargeback_tiers]
     @sb[:num_tiers][ii] = 1 unless @sb[:num_tiers][ii] || @sb[:num_tiers][ii] == 0
     @sb[:num_tiers][ii] += 1
-    pos = @sb[:num_tiers][ii] - 2
-    n = pos + 1
-    @edit[:new][:tiers][ii][n] = {}
-    @edit[:new][:tiers][ii][n][:start] = @edit[:new][:tiers][ii][pos][:end]
-    @edit[:new][:tiers][ii][n][:end] = Float::INFINITY
-    @edit[:new][:tiers][ii][n][:fix_rate] = 0.0
-    @edit[:new][:tiers][ii][n][:var_rate] = 0.0
-    render :update do |page|
-      page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row") # Update the first row to change the colspan
-      page.insert_html(:after, "rate_detail_row_#{i}_#{pos}", :partial => "tier_row") # Insert the new tier after the last one
-      page << javascript_for_miq_button_visibility(true)
-    end
+    tier_index = @sb[:num_tiers][ii] - 1
+    @edit[:new][:tiers][ii][tier_index] = {}
+    @edit[:new][:tiers][ii][tier_index][:start] = @edit[:new][:tiers][ii][tier_index-1][:end]
+    @edit[:new][:tiers][ii][tier_index][:end] = Float::INFINITY
+    @edit[:new][:tiers][ii][tier_index][:fixed_rate] = 0.0
+    @edit[:new][:tiers][ii][tier_index][:variable_rate] = 0.0
+    add_row(detail_index, tier_index-1)
   end
 
   # Remove the selected tier
   def cb_tier_remove
     @edit = session[:edit]
-    id = params[:id]
-    i = id.split("-")[0]
-    j = id.split("-")[1]
-    params[:id] = i
-    @sb[:num_tiers][i.to_i] = @sb[:num_tiers][i.to_i] - 1
-    render :update do |page|
-      page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row")
-      @edit[:new][:tiers][i.to_i].each_with_index do |_tier, k|
-        next if k <= j.to_i
-        # Move up tiers not to have blank rows
-        @edit[:new][:tiers][i.to_i][k - 1] = @edit[:new][:tiers][i.to_i][k]
-        @sb[:tier_row] = k
-        page.replace("rate_detail_row_#{i}_#{k - 1}", :partial => "tier_row")
-        @sb[:tier_row] = nil
-      end
-      # Delete the last row
-      page.replace("rate_detail_row_#{i}_#{@sb[:num_tiers][i.to_i]}", '')
-      page << javascript_for_miq_button_visibility(true)
+    index = params[:index]
+    detail_index, tier_to_remove_index = index.split("-")
+    params[:detail_index] = detail_index
+    detail_index = detail_index.to_i
+    tier_to_remove_index = tier_to_remove_index.to_i
+    @sb[:num_tiers][detail_index] = @sb[:num_tiers][detail_index] - 1
+    tiers = @edit[:new][:tiers][detail_index]
+    @edit[:new][:tiers][detail_index].each_with_index do |_tier, tier_index|
+      next if tier_index <= tier_to_remove_index
+      @edit[:new][:tiers][detail_index][tier_index - 1] = @edit[:new][:tiers][detail_index][tier_index]
     end
+    replace_rows(detail_index, tiers, tier_to_remove_index) # Replace tiers in the view
     # Delete tier records
-    @edit[:new][:tiers][i.to_i].delete_at(@sb[:num_tiers][i.to_i])
-    @sb[:tiers][i.to_i].delete_at(@sb[:num_tiers][i.to_i])
+    @edit[:new][:tiers][detail_index].delete_at(@sb[:num_tiers][detail_index])
+    @sb[:tiers][detail_index].delete_at(@sb[:num_tiers][detail_index])
   end
 
   def cb_assign_update
@@ -661,23 +647,23 @@ class ChargebackController < ApplicationController
     @edit[:new][:currency] = @sb[:rate_details][0].chargeback_rate_detail_currency_id
     @edit[:new][:tiers] = []
 
-    @sb[:rate_details].each_with_index do |r, i|
+    @sb[:rate_details].each_with_index do |detail, detail_index|
       temp = {}
-      temp[:per_time] = r.per_time ? r.per_time : "hourly"
-      temp[:per_unit] = r.per_unit
-      temp[:detail_measure] = r.detail_measure
-      temp[:currency] = r.detail_currency.id
-      @edit[:new][:tiers][i] = []
-      @sb[:tiers][i].each do |t|
+      temp[:per_time] = detail.per_time ? detail.per_time : "hourly"
+      temp[:per_unit] = detail.per_unit
+      temp[:detail_measure] = detail.detail_measure
+      temp[:currency] = detail.detail_currency.id
+      @edit[:new][:tiers][detail_index] = []
+      @sb[:tiers][detail_index].each do |tier|
         temp2 = {}
-        temp2[:fix_rate] = t.fix_rate
-        temp2[:var_rate] = t.var_rate
-        temp2[:start] = t.start
-        temp2[:end] = t.end
-        temp2[:chargeback_rate_detail_id] = r.id
-        @edit[:new][:tiers][i].push(temp2)
+        temp2[:fixed_rate] = tier.fixed_rate
+        temp2[:variable_rate] = tier.variable_rate
+        temp2[:start] = tier.start
+        temp2[:end] = tier.end
+        temp2[:chargeback_rate_detail_id] = detail.id
+        @edit[:new][:tiers][detail_index].push(temp2)
       end
-      @sb[:num_tiers][i] = @sb[:tiers][i].length
+      @sb[:num_tiers][detail_index] = @sb[:tiers][detail_index].length
       @edit[:new][:details].push(temp)
     end
 
@@ -695,40 +681,45 @@ class ChargebackController < ApplicationController
   def cb_rate_get_form_vars
     @sb[:rate] = @edit[:rate]
     @edit[:new][:description] = params[:description] if params[:description]
-    @edit[:new][:details].each_with_index do |_detail, i|
-      @edit[:new][:details][i][:per_time] = params["per_time_#{i}".to_sym] if params["per_time_#{i}".to_sym]
-      @edit[:new][:details][i][:per_unit] = params["per_unit_#{i}".to_sym] if params["per_unit_#{i}".to_sym]
+    @edit[:new][:details].each_with_index do |_detail, detail_index|
+      @edit[:new][:details][detail_index][:per_time] =
+        params["per_time_#{detail_index}".to_sym] if params["per_time_#{detail_index}".to_sym]
+      @edit[:new][:details][detail_index][:per_unit] =
+        params["per_unit_#{detail_index}".to_sym] if params["per_unit_#{detail_index}".to_sym]
       # Add currencies to chargeback_controller.rb
-      @edit[:new][:details][i][:currency] = params[:currency] if params[:currency]
+      @edit[:new][:details][detail_index][:currency] = params[:currency] if params[:currency]
+
       # Save tiers into @edit
-      (0..@sb[:num_tiers][i].to_i - 1).each do |j|
-        @edit [:new][:tiers][i][j] = {} unless @edit[:new][:tiers][i][j]
-        @edit[:new][:tiers][i][j][:fix_rate] =
-          params["fix_rate_#{i}_#{j}".to_sym] if params["fix_rate_#{i}_#{j}".to_sym]
-        @edit[:new][:tiers][i][j][:var_rate] =
-          params["var_rate_#{i}_#{j}".to_sym] if params["var_rate_#{i}_#{j}".to_sym]
-        @edit[:new][:tiers][i][j][:start] = params["start_#{i}_#{j}".to_sym] if params["start_#{i}_#{j}".to_sym]
-        @edit[:new][:tiers][i][j][:end] = params["end_#{i}_#{j}".to_sym] if params["end_#{i}_#{j}".to_sym]
+      (0..@sb[:num_tiers][detail_index].to_i - 1).each do |tier_index|
+        @edit [:new][:tiers][detail_index][tier_index] = {} unless @edit[:new][:tiers][detail_index][tier_index]
+        @edit[:new][:tiers][detail_index][tier_index][:fixed_rate] =
+          params["fixed_rate_#{detail_index}_#{tier_index}".to_sym] if params["fixed_rate_#{detail_index}_#{tier_index}".to_sym]
+        @edit[:new][:tiers][detail_index][tier_index][:variable_rate] =
+          params["variable_rate_#{detail_index}_#{tier_index}".to_sym] if params["variable_rate_#{detail_index}_#{tier_index}".to_sym]
+        @edit[:new][:tiers][detail_index][tier_index][:start] =
+          params["start_#{detail_index}_#{tier_index}".to_sym] if params["start_#{detail_index}_#{tier_index}".to_sym]
+        @edit[:new][:tiers][detail_index][tier_index][:end] =
+          params["end_#{detail_index}_#{tier_index}".to_sym] if params["end_#{detail_index}_#{tier_index}".to_sym]
       end
     end
   end
 
   def cb_rate_set_record_vars
-    @edit[:new][:details].each_with_index do |_rate, i|
-      @sb[:rate_details][i].per_time           = @edit[:new][:details][i][:per_time]
-      @sb[:rate_details][i].per_unit           = @edit[:new][:details][i][:per_unit]
+    @edit[:new][:details].each_with_index do |_detail, detail_index|
+      @sb[:rate_details][detail_index].per_time           = @edit[:new][:details][detail_index][:per_time]
+      @sb[:rate_details][detail_index].per_unit           = @edit[:new][:details][detail_index][:per_unit]
       # C: Record the currency selected in the edit view, in my chargeback_rate_details table
-      @sb[:rate_details][i].chargeback_rate_detail_currency_id = @edit[:new][:details][i][:currency]
-      @sb[:rate_details][i].chargeback_rate_id = @sb[:rate].id
+      @sb[:rate_details][detail_index].chargeback_rate_detail_currency_id = @edit[:new][:details][detail_index][:currency]
+      @sb[:rate_details][detail_index].chargeback_rate_id = @sb[:rate].id
       # Save tiers into @sb
-      @edit[:new][:tiers][i].each_with_index do |_tier, j|
-        @sb[:tiers][i][j] = ChargebackTier.new
-        @sb[:tiers][i][j].start = @edit[:new][:tiers][i][j][:start]
-        @sb[:tiers][i][j].end = @edit[:new][:tiers][i][j][:end]
-        @sb[:tiers][i][j].fix_rate = @edit[:new][:tiers][i][j][:fix_rate]
-        @sb[:tiers][i][j].var_rate = @edit[:new][:tiers][i][j][:var_rate]
-        @sb[:tiers][i][j].chargeback_rate_detail_id = @sb[:rate_details][i].id
-        if j >= @sb[:num_tiers][i]
+      @edit[:new][:tiers][detail_index].each_with_index do |_tier, tier_index|
+        @sb[:tiers][detail_index][tier_index] =
+          ChargebackTier.new(:start                     => @edit[:new][:tiers][detail_index][tier_index][:start],
+                             :end                       => @edit[:new][:tiers][detail_index][tier_index][:end],
+                             :fixed_rate                => @edit[:new][:tiers][detail_index][tier_index][:fixed_rate],
+                             :variable_rate             => @edit[:new][:tiers][detail_index][tier_index][:variable_rate],
+                             :chargeback_rate_detail_id => @sb[:rate_details][detail_index].id)
+        if tier_index >= @sb[:num_tiers][detail_index]
           break
         end
       end
@@ -992,5 +983,35 @@ class ChargebackController < ApplicationController
     session[:chargeback_lastaction]   = @lastaction
     session[:chargeback_current_page] = @current_page
     session[:chageback_display]       = @display unless @display.nil?
+  end
+
+  def display_detail_errors(detail, errors)
+    errors.each { |field, msg| add_flash("'#{detail.description}' #{field.to_s.capitalize} #{msg}", :error) }
+  end
+
+  def add_row(i, pos)
+    render :update do |page|
+      page.replace("rate_detail_row_#{i}_0", :partial => "tier_first_row") # Update the first row to change the colspan
+      page.insert_html(:after, "rate_detail_row_#{i}_#{pos}", :partial => "tier_row") # Insert the new tier after the last one
+      page << javascript_for_miq_button_visibility(true)
+    end
+  end
+
+  def replace_rows(detail_index, tiers, tier_to_remove_index)
+    render :update do |page|
+      page.replace("rate_detail_row_#{detail_index}_0", :partial => "tier_first_row")
+      tiers.each_with_index do |_tier, tier_index|
+        next if tier_index <= tier_to_remove_index
+        # Move up tiers not to have blank rows
+        # @edit[:new][:tiers][detail_index][tier_index - 1] = @edit[:new][:tiers][detail_index][tier_index]
+        params[:tier_row] = tier_index
+        page.replace("rate_detail_row_#{detail_index}_#{tier_index - 1}", :partial => "tier_row")
+        params[:tier_row] = nil
+      end
+      # Delete the last row
+      # delete_row(detail_index, @sb[:num_tiers][detail_index])
+      page.replace("rate_detail_row_#{detail_index}_#{@sb[:num_tiers][detail_index]}", '')
+      page << javascript_for_miq_button_visibility(true)
+    end
   end
 end

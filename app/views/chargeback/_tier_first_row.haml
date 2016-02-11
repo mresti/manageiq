@@ -1,4 +1,4 @@
-- i = params[:id]
+- i = params[:detail_index]
 - r = @sb[:rate_details][i.to_i]
 - url = url_for(:action => 'cb_rate_form_field_changed', :id => "#{@sb[:rate].id || "new"}")
 - n = @sb[:num_tiers][i.to_i]
@@ -15,19 +15,19 @@
     = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i.to_i][0][:end],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td{:align => 'right'}
-    = text_field_tag("fix_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:fix_rate],
+    = text_field_tag("fixed_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:fixed_rate],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td{:align => 'right'}
-    = text_field_tag("var_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:var_rate],
+    = text_field_tag("variable_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:variable_rate],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
     = button_tag(_(""),
                  :class   => "btn btn-default pficon-add-circle-o",
                  :alt     => t = _("Add a new tier"),
                  :title   => t,
-                 :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
-                                                       :id     => i,
-                                                       :button => "add")}');")
+                 :onclick => "miqAjaxButton('#{url_for(:action       => "cb_tier_add",
+                                                       :detail_index => i,
+                                                       :button       => "add")}');")
   %td{:rowspan => n.to_s}
     - per_time_types = {"hourly"  => "Hourly", "daily"   => "Daily", "weekly"  => "Weekly", "monthly" => "Monthly"}
     = select_tag("per_time_#{i}",

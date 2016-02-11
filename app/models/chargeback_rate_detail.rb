@@ -8,22 +8,23 @@ class ChargebackRateDetail < ApplicationRecord
 
   # Set the rates according to the tiers
   def find_rate(value)
-    @fix_rate = 0.0
-    @var_rate = 0.0
+    fixed_rate = 0.0
+    variable_rate = 0.0
     chargeback_tiers.each do |tier|
       next if value < tier.start
       next if value >= tier.end
-      @fix_rate = tier.fix_rate
-      @var_rate = tier.var_rate
+      fixed_rate = tier.fixed_rate
+      variable_rate = tier.variable_rate
       break
     end
+    return fixed_rate, variable_rate
   end
 
   def cost(value)
     return 0.0 unless self.enabled?
     value = 1 if group == 'fixed'
-    find_rate(value)
-    hourly(@fix_rate) + hourly(@var_rate) * value
+    (fixed_rate, variable_rate) = find_rate(value)
+    hourly(fixed_rate) + hourly(variable_rate) * value
   end
 
   def hourly(rate)
@@ -38,8 +39,8 @@ class ChargebackRateDetail < ApplicationRecord
   end
 
   def hourly_rate
-    find_rate(0.0)
-    rate = @var_rate
+    (fixed_rate, variable_rate) = find_rate(0.0)
+    rate = variable_rate
     return 0.0 if rate.zero?
 
     hr = case per_time
@@ -97,18 +98,18 @@ class ChargebackRateDetail < ApplicationRecord
   end
 
   def friendly_rate
-    find_rate(0.0)
+    (fixed_rate, variable_rate) = find_rate(0.0)
     value = read_attribute(:friendly_rate)
     return value unless value.nil?
 
     if group == 'fixed'
       # Example: 10.00 Monthly
-      "#{@fix_rate + @var_rate} #{per_time.to_s.capitalize}"
+      "#{fixed_rate + variable_rate} #{per_time.to_s.capitalize}"
     else
       s = ""
       ChargebackTier.where(:chargeback_rate_detail_id => id).each do |tier|
         # Example: Daily @ .02 per MHz
-        s += "#{per_time.to_s.capitalize} @ #{tier.fix_rate} + #{tier.var_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}\n"
+        s += "#{per_time.to_s.capitalize} @ #{tier.fixed_rate} + #{tier.variable_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}\n"
       end
       s.chomp
     end

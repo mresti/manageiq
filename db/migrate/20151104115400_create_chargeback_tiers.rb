@@ -4,8 +4,8 @@ class CreateChargebackTiers < ActiveRecord::Migration
       t.bigint :chargeback_rate_detail_id
       t.float :start
       t.float :end
-      t.float :fix_rate
-      t.float :var_rate
+      t.float :fixed_rate
+      t.float :variable_rate
 
       t.timestamp :null => false
     end

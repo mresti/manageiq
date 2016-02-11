@@ -15,12 +15,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.02
+          :fixed_rate: 0.0
+          :variable_rate: 0.02
     - :description: Allocated CPU Count
       :group: cpu
       :source: allocated
@@ -31,12 +31,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 1.0
-          :var_rate: 0.0
+          :fixed_rate: 1.0
+          :variable_rate: 0.0
     - :description: Used Memory
       :group: memory
       :source: used
@@ -48,12 +48,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.02
+          :fixed_rate: 0.0
+          :variable_rate: 0.02
     - :description: Allocated Memory
       :group: memory
       :source: allocated
@@ -65,8 +65,8 @@
       :tiers:
         - :start: -Infinity
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
     - :description: Used Network I/O
       :group: net_io
       :source: used
@@ -78,16 +78,16 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: 100
-          :fix_rate: 0.5
-          :var_rate: 0.0
+          :fixed_rate: 0.5
+          :variable_rate: 0.0
         - :start: 100
           :end: Infinity
-          :fix_rate: 0.5
-          :var_rate: 0.005
+          :fixed_rate: 0.5
+          :variable_rate: 0.005
     - :description: Used Disk I/O
       :group: disk_io
       :source: used
@@ -99,12 +99,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.005
+          :fixed_rate: 0.0
+          :variable_rate: 0.005
     - :description: Fixed Compute Cost 1
       :group: fixed
       :source: compute_1
@@ -113,8 +113,8 @@
       :tiers:
         - :start: -Infinity
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
     - :description: Fixed Compute Cost 2
       :group: fixed
       :source: compute_2
@@ -123,8 +123,8 @@
       :tiers:
         - :start: -Infinity
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
 - :description: Default
   :guid: 7d7aaf20-5214-11df-a888-001d09066d98
   :rate_type: Storage
@@ -141,12 +141,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 1.0
-          :var_rate: 0.0
+          :fixed_rate: 1.0
+          :variable_rate: 0.0
     - :description: Used Disk Storage
       :group: storage
       :source: used
@@ -158,12 +158,12 @@
       :tiers:
         - :start: -Infinity
           :end: 0
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
         - :start: 0
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 2.0
+          :fixed_rate: 0.0
+          :variable_rate: 2.0
     - :description: Fixed Storage Cost 1
       :group: fixed
       :source: storage_1
@@ -172,8 +172,8 @@
       :tiers:
         - :start: -Infinity
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0
     - :description: Fixed Storage Cost 2
       :group: fixed
       :source: storage_2
@@ -182,5 +182,5 @@
       :tiers:
         - :start: -Infinity
           :end: Infinity
-          :fix_rate: 0.0
-          :var_rate: 0.0
+          :fixed_rate: 0.0
+          :variable_rate: 0.0

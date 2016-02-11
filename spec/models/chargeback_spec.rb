@@ -91,8 +91,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -104,8 +104,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -127,8 +127,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -140,8 +140,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -164,8 +164,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -186,8 +186,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -212,8 +212,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -228,8 +228,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -287,8 +287,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -300,8 +300,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -324,8 +324,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -337,8 +337,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -360,8 +360,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -382,8 +382,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -405,8 +405,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save
@@ -419,8 +419,8 @@ describe Chargeback do
                                :chargeback_rate_detail_id => cbrd.id,
                                :start                     => -Float::INFINITY,
                                :end                       => Float::INFINITY,
-                               :fix_rate                  => 0.0,
-                               :var_rate                  => @count_hourly_rate.to_s
+                               :fixed_rate                => 0.0,
+                               :variable_rate             => @count_hourly_rate.to_s
                               )
       cbrd.chargeback_tiers = [cbt]
       cbrd.save

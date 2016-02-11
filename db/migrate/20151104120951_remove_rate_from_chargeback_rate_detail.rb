@@ -10,8 +10,8 @@ class RemoveRateFromChargebackRateDetail < ActiveRecord::Migration
     ChargebackRateDetail.reset_column_information
     ChargebackRateDetail.all.to_a.each do |detail|
       if detail.respond_to?(:rate)
-        ChargebackTier.create(:chargeback_rate_detail_id => detail.id, :start => -Float::INFINITY, :end => 0, :fix_rate => 0.0, :var_rate => 0.0) # detail.rate)
-        ChargebackTier.create(:chargeback_rate_detail_id => detail.id, :start => 0, :end => Float::INFINITY, :fix_rate => 0.0, :var_rate => detail.rate)
+        ChargebackTier.create(:chargeback_rate_detail_id => detail.id, :start => -Float::INFINITY, :end => 0, :fixed_rate => 0.0, :variable_rate => 0.0) # detail.rate)
+        ChargebackTier.create(:chargeback_rate_detail_id => detail.id, :start => 0, :end => Float::INFINITY, :fixed_rate => 0.0, :variable_rate => detail.rate)
       end
     end
     remove_column :chargeback_rate_details, :rate, :string

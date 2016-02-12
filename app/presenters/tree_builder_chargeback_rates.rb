@@ -42,5 +42,13 @@ class TreeBuilderChargebackRates < TreeBuilder
   def x_get_tree_custom_kids(object, count_only, _options)
     objects = ChargebackRate.where(:rate_type => object[:id]).to_a
     count_only_or_objects(count_only, objects, "description")
+    objects.sort.each do |cbr|
+      cbr.chargeback_rate_details.group_by(&:start_date).each do |range_group|
+        if !range_group[0].nil?
+          name = "from #{range_group[0]} to #{range_group[1][0].end_date}"
+          x_build_node_dynatree({:id => name, :text  => name, :image => "compute" , :tip  => name}, cbr.id, _options)
+        end
+      end
+    end
   end
 end

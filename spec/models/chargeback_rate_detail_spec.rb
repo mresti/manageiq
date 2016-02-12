@@ -162,18 +162,4 @@ describe ChargebackRateDetail do
 
     expect(FactoryGirl.build(:chargeback_rate_detail)).to be_valid
   end
-
-    # it "for_the_same_rate_dont_overlap_the_range" do
-    #   cbrd1 = FactoryGirl.create(:chargeback_rate_detail,
-    #                              :chargeback_rate_id                  =>  1,
-    #                              :start_date                          =>  Date.today,
-    #                              :end_date                            =>  Date.today + 10
-    #                             )
-    #   cbrd2 = FactoryGirl.create(:chargeback_rate_detail,
-    #                              :chargeback_rate_id                  =>  1,
-    #                              :start_date                          =>  Date.today + 5,
-    #                              :end_date                            =>  Date.today + 10
-    #                             )
-    #   expect(cbrd2).not_to be_valid
-    # end
 end

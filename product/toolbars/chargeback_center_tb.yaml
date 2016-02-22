@@ -40,25 +40,9 @@
     :items:
     - :button: chargeback_rates_edit
       :icon: pficon pficon-edit fa-lg
-      :text: "Edit this Chargeback Rate Range"
-      :title: "Edit this Chargeback Rate Range"
+      :text: "Edit this Chargeback Rate"
+      :title: "Edit this Chargeback Rate"
       :url_parms: 'main_div'
-    - :button: chargeback_rates_edit
-      :icon: pficon pficon-edit fa-lg
-      :text: "Add a new Chargeback Rate Range"
-      :title: "Add a new Chargeback Rate Range"
-      :url_parms: 'main_div'
-    - :button: chargeback_rates_copy
-      :icon: fa fa-files-o fa-lg
-      :title: "Copy this Chargeback Rate Range"
-      :text: "Copy this Chargeback Rate Range"
-      :url_parms: 'main_div'
-    - :button: chargeback_rates_delete
-      :icon: pficon pficon-delete fa-lg
-      :text: "Remove Range from the VMDB"
-      :title: "Remove this Chargeback Rate Range from the VMDB"
-      :url_parms: 'main_div'
-      :confirm: "Warning: This Chargeback Rate Range will be permanently removed from the Virtual Management Database.  Are you sure you want to remove this Chargeback Rate?"
     - :button: chargeback_rates_copy
       :icon: fa fa-files-o fa-lg
       :title: "Copy this Chargeback Rate"

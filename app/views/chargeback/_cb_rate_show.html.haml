@@ -13,7 +13,7 @@
   %hr
   %h3= _('Rate Details')
   %ul.nav.nav-tabs
-    - if  @sb[:date_ranges][0] == 'Active'
+    - if @sb[:date_ranges].empty?
       %li.active{ :role => "presentation" }
         %a= _('Active all the Time')
     - else

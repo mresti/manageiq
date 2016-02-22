@@ -285,12 +285,10 @@ class ChargebackController < ApplicationController
     @display = "main"
     @sb[:date_ranges] = []
     @record.chargeback_rate_details.group_by(&:start_date).each do |range_group|
-      if range_group[0].nil?
-        @sb[:date_ranges].push('Active')
-      else
+      unless range_group[0].nil?
         @sb[:date_ranges].push(
           :start_date => range_group[0],
-          :end_date => range_group[1][0].end_date
+          :end_date   => range_group[1][0].end_date
         )
       end
     end
@@ -348,7 +346,18 @@ class ChargebackController < ApplicationController
       page << javascript_for_miq_button_visibility(changed)
     end
   end
-
+  # AJAX driven routine for date range in rate form
+  def edit_date_range
+    # temporally we use the first date range [0]
+    @sb[:date_ranges] = []
+    @sb[:date_ranges].push(
+      :start_date => Date.today.strftime("%m/%d/%Y"),
+      :end_date   => (Date.today + 365).strftime("%m/%d/%Y")
+    )
+    render :update do |page|
+      page.replace_html("date_range_container", :partial => "cb_rate_edit_date_range")
+    end
+  end
   def cb_assign_update
     if params[:button] == "reset"
       get_node_info(x_node)

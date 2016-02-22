@@ -11,10 +11,22 @@
                         :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json,
                         :class => "form-control")
         = javascript_tag(javascript_focus('description'))
-
   %hr
-
   %h3= _('Rate Details')
+  %ul.nav.nav-tabs
+    - if @sb[:date_ranges].empty?
+      %li.active{ :role => "presentation" }
+        %a= _('Active all the Time')
+    - else
+      - @sb[:date_ranges].each do |dr|
+        %li.active{ :role => "presentation" }
+          %a= _("from #{dr[:start_date]} to #{dr[:end_date]}")
+    %li{ :role => "presentation" }
+      %a.pficon.pficon-add-circle-o.fa-lg
+  #date_range_container
+    #form_div
+      = render :partial => "cb_rate_edit_date_range"
+  %hr
   %table.table.table-bordered
     %thead
       %tr

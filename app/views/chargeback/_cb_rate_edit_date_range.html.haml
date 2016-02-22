@@ -1,0 +1,63 @@
+- url = url_for(:action => 'cb_rate_form_field_changed', :id => "#{@sb[:rate].id || "new"}")
+%h3
+  = _('Date Range')
+.form-horizontal
+  - if  @sb[:date_ranges].empty?
+    .form-group
+      %label.control-label.col-md-3
+        = _("This Rate is active all the time")
+      .col-md-8
+        = button_tag(_("Add a date range"),
+                     :class   => "btn btn-primary",
+                     :onclick => "miqAjaxButton('#{url_for(:action => "edit_date_range", :button => "add_date_range")}');")
+  - else
+    .form-group
+      %label.control-label.col-md-2
+        = _("Starting Date")
+      .col-md-8
+        = datepicker_input_tag("miq_date_1", @sb[:date_ranges][0][:start_date],
+          :readonly               => "true",
+          "data-miq_observe_date" => {:url => url}.to_json)
+        = select_tag("start_hour",
+          options_for_select((0..23).to_a),
+          :class => "selectpicker selectWidth")
+        :javascript
+          miqInitSelectPicker();
+          miqSelectPickerEvent("start_hour", "#{url}");
+        -# TODO: Enable comments for the translators in the gettext parser
+        -# TRANSLATORS: this h means hours
+        = _("h")
+        = select_tag("start_min",
+          options_for_select((0..55).step(5).to_a),
+          :class => "selectpicker selectWidth")
+        :javascript
+          miqInitSelectPicker();
+          miqSelectPickerEvent("start_min", "#{url}");
+        -# TODO: Enable comments for the translators in the gettext parser
+        -# TRANSLATORS: this m means minutes
+        = _("m")
+    .form-group
+      %label.control-label.col-md-2
+        = _("Ending Date")
+      .col-md-8
+        = datepicker_input_tag("miq_date_1", @sb[:date_ranges][0][:end_date],
+          :readonly               => "true",
+          "data-miq_observe_date" => {:url => url}.to_json)
+        = select_tag("start_hour",
+          options_for_select((0..23).to_a),
+          :class => "selectpicker selectWidth")
+        :javascript
+          miqInitSelectPicker();
+          miqSelectPickerEvent("start_hour", "#{url}");
+        -# TODO: Enable comments for the translators in the gettext parser
+        -# TRANSLATORS: this h means hours
+        = _("h")
+        = select_tag("start_min",
+          options_for_select((0..55).step(5).to_a),
+          :class => "selectpicker selectWidth")
+        :javascript
+          miqInitSelectPicker();
+          miqSelectPickerEvent("start_min", "#{url}");
+        -# TODO: Enable comments for the translators in the gettext parser
+        -# TRANSLATORS: this m means minutes
+        = _("m")

@@ -1,6 +1,6 @@
 require_migration
 
-describe RemoveRateFromChargebackRateDetail do
+describe TransferRateValueToTiers do
   let(:chargeback_rate_detail_stub) { migration_stub(:ChargebackRateDetail) }
 
   migration_context :up do

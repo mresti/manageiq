@@ -1,4 +1,4 @@
-class RemoveRateFromChargebackRateDetail < ActiveRecord::Migration
+class TransferRateValueToTiers < ActiveRecord::Migration
   class ChargebackRateDetail < ActiveRecord::Base
     has_many :chargeback_tiers
   end
@@ -14,6 +14,5 @@ class RemoveRateFromChargebackRateDetail < ActiveRecord::Migration
         ChargebackTier.create(:chargeback_rate_detail_id => detail.id, :start => 0, :end => Float::INFINITY, :fixed_rate => 0.0, :variable_rate => detail.rate)
       end
     end
-    remove_column :chargeback_rate_details, :rate, :string
   end
 end

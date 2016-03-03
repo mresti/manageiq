@@ -17,9 +17,17 @@
       %li.active{ :role => "presentation" }
         %a= _('Active all the Time')
     - else
-      - @sb[:date_ranges].each do |dr|
-        %li.active{ :role => "presentation" }
-          %a= _("from #{dr[:start_date]} to #{dr[:end_date]}")
+      - @sb[:date_ranges].each_with_index do |dr, i|
+        - if dr[:current]
+          %li.active{ :role => "presentation" }
+            %a= _("from #{dr[:start_date]} to #{dr[:end_date]}")
+        - else
+          %li{ :role => "presentation" }
+            = link_to(_("from #{dr[:start_date]} to #{dr[:end_date]}"),
+                      url_for(:action => 'tree_select', :id => "xx-#{@record.rate_type}_cr-#{@record.id}", :date_range => i),
+                      :remote                => true,
+                      "data-method"          => :post)
+
   %table.table.table-bordered
     %thead
       %tr
@@ -29,6 +37,8 @@
         %th= _('Per Time')
         %th= _('Per Unit')
     %tbody
+      - if !@sb[:date_ranges].empty?
+        -  @sb[:selected_rate_details] =  @sb[:selected_rate_details].select { |rd| rd[:start_date].strftime("%m/%d/%Y") == @sb[:date_ranges][@sb[:selected_date_range]][:start_date] }
       - @sb[:selected_rate_details].each do |r|
         - @cur_group = r[:group] if @cur_group.nil?
         - if @cur_group != r[:group]

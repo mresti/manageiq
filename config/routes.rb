@@ -235,6 +235,7 @@ Vmdb::Application.routes.draw do
         cb_rate_edit
         cb_rate_form_field_changed
         cb_rate_show
+        cb_rate_show_date_range
         cb_rates_delete
         cb_rates_list
         edit_date_range

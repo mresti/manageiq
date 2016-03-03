@@ -15,49 +15,20 @@
       %label.control-label.col-md-2
         = _("Starting Date")
       .col-md-8
-        = datepicker_input_tag("miq_date_1", @sb[:date_ranges][0][:start_date],
+        = datepicker_input_tag("start_date", @sb[:date_ranges][@sb[:selected_date_range]][:start_date],
           :readonly               => "true",
-          "data-miq_observe_date" => {:url => url}.to_json)
-        = select_tag("start_hour",
-          options_for_select((0..23).to_a),
-          :class => "selectpicker selectWidth")
-        :javascript
-          miqInitSelectPicker();
-          miqSelectPickerEvent("start_hour", "#{url}");
-        -# TODO: Enable comments for the translators in the gettext parser
-        -# TRANSLATORS: this h means hours
-        = _("h")
-        = select_tag("start_min",
-          options_for_select((0..55).step(5).to_a),
-          :class => "selectpicker selectWidth")
-        :javascript
-          miqInitSelectPicker();
-          miqSelectPickerEvent("start_min", "#{url}");
-        -# TODO: Enable comments for the translators in the gettext parser
-        -# TRANSLATORS: this m means minutes
-        = _("m")
+          :size                   => 10,
+          "data-miq_observe_date" => {:interval => '.5', :url => url}.to_json)
     .form-group
       %label.control-label.col-md-2
         = _("Ending Date")
       .col-md-8
-        = datepicker_input_tag("miq_date_1", @sb[:date_ranges][0][:end_date],
+        = datepicker_input_tag("end_date", @sb[:date_ranges][@sb[:selected_date_range]][:end_date],
           :readonly               => "true",
-          "data-miq_observe_date" => {:url => url}.to_json)
-        = select_tag("start_hour",
-          options_for_select((0..23).to_a),
-          :class => "selectpicker selectWidth")
-        :javascript
-          miqInitSelectPicker();
-          miqSelectPickerEvent("start_hour", "#{url}");
-        -# TODO: Enable comments for the translators in the gettext parser
-        -# TRANSLATORS: this h means hours
-        = _("h")
-        = select_tag("start_min",
-          options_for_select((0..55).step(5).to_a),
-          :class => "selectpicker selectWidth")
-        :javascript
-          miqInitSelectPicker();
-          miqSelectPickerEvent("start_min", "#{url}");
-        -# TODO: Enable comments for the translators in the gettext parser
-        -# TRANSLATORS: this m means minutes
-        = _("m")
+          :size                   => 10,
+          "data-miq_observe_date" => {:interval => '.5', :url => url}.to_json)
+    .form-group
+      .col-md-8
+        = button_tag(_("Make it Active all the Time"),
+                       :class   => "btn btn-primary",
+                       :onclick => "miqAjaxButton('#{url_for(:action => "edit_date_range", :button => "active_all_the_time")}');")

@@ -39,6 +39,10 @@ class ChargebackController < ApplicationController
   def tree_select
     self.x_active_tree = params[:tree] if params[:tree]
     self.x_node = params[:id]
+    # store the selected date range tab in the show rate view
+    unless params[:date_range].nil?
+      @sb[:selected_date_range] = params[:date_range]
+    end
     get_node_info(x_node)
     replace_right_cell
   end
@@ -223,6 +227,8 @@ class ChargebackController < ApplicationController
           detail.group = r[:group]
           detail.per_unit = r[:per_unit]
           detail.metric = r[:metric]
+          detail.start_date = r[:start_date]
+          detail.end_date = r[:end_date]
           detail.chargeback_rate_detail_measure_id = r[:chargeback_rate_detail_measure_id]
           @sb[:rate_details].push(detail) unless @sb[:rate_details].include?(detail)
         end
@@ -284,13 +290,29 @@ class ChargebackController < ApplicationController
   def cb_rate_show
     @display = "main"
     @sb[:date_ranges] = []
-    @record.chargeback_rate_details.group_by(&:start_date).each do |range_group|
+    @record.chargeback_rate_details.sort_by { |s| s[:start_date] }.group_by(&:start_date).each_with_index do |range_group, i|
+      current = false
       unless range_group[0].nil?
+        if !@sb[:selected_date_range].nil?
+          if @sb[:selected_date_range].to_i == i
+            current = true
+          end
+        elsif Date.today >= range_group[0] && Date.today <= range_group[1][0].end_date
+          current = true
+        end
         @sb[:date_ranges].push(
-          :start_date => range_group[0],
-          :end_date   => range_group[1][0].end_date
+          :start_date => range_group[0].strftime("%m/%d/%Y"),
+          :end_date   => range_group[1][0].end_date.strftime("%m/%d/%Y"),
+          :current    =>  current
         )
       end
+    end
+    unless @sb[:date_ranges].empty?
+      # if there are not a current date range we use the first range by default
+      if @sb[:date_ranges].select{ |r| r[:current] == true }.nil?
+        @sb[:date_ranges][0][:current] == true
+      end
+      @sb[:selected_date_range] = @sb[:date_ranges].find_index { |r| r[:current] == true}
     end
     @sb[:selected_rate_details] = @record.chargeback_rate_details.to_a
     @sb[:selected_rate_details].sort_by! { |rd| [rd[:group].downcase, rd[:description].downcase] }
@@ -350,10 +372,12 @@ class ChargebackController < ApplicationController
   def edit_date_range
     # temporally we use the first date range [0]
     @sb[:date_ranges] = []
-    @sb[:date_ranges].push(
-      :start_date => Date.today.strftime("%m/%d/%Y"),
-      :end_date   => (Date.today + 365).strftime("%m/%d/%Y")
-    )
+    if params[:button] == "add_date_range"
+      @sb[:date_ranges].push(
+        :start_date => Date.today.strftime("%m/%d/%Y"),
+        :end_date   => (Date.today + 365).strftime("%m/%d/%Y")
+      )
+    end
     render :update do |page|
       page.replace_html("date_range_container", :partial => "cb_rate_edit_date_range")
     end
@@ -569,7 +593,7 @@ class ChargebackController < ApplicationController
     @edit[:new][:rate_type] = @sb[:rate].rate_type ? @sb[:rate].rate_type : x_node.split('-').last
     @edit[:new][:details] = []
 
-    @sb[:rate_details].each do |r|
+    @sb[:rate_details].select { |rd| rd[:start_date].strftime("%m/%d/%Y") == @sb[:date_ranges][@sb[:selected_date_range]][:start_date] }.each do |r|
       temp = {}
       temp[:rate] = (!r.rate.nil? && r.rate != "") ? r.rate : 0
       temp[:per_time] = r.per_time ? r.per_time : "hourly"
@@ -596,16 +620,23 @@ class ChargebackController < ApplicationController
       @edit[:new][:details][i][:rate] = params["rate_#{i}".to_sym] if params["rate_#{i}".to_sym]
       @edit[:new][:details][i][:per_time] = params["per_time_#{i}".to_sym] if params["per_time_#{i}".to_sym]
       @edit[:new][:details][i][:per_unit] = params["per_unit_#{i}".to_sym] if params["per_unit_#{i}".to_sym]
+      @edit[:new][:details][i][:start_date] = params["start_date".to_sym] if params["start_date".to_sym]
+      @edit[:new][:details][i][:end_date] = params["end_date".to_sym] if params["end_date".to_sym]
     end
   end
 
   def cb_rate_set_record_vars
+    # Updating only the rates detail in the selected range
+    sb_temp = @sb[:rate_details].select { |rd| rd[:start_date].strftime("%m/%d/%Y") == @sb[:date_ranges][@sb[:selected_date_range]][:start_date] }
     @edit[:new][:details].each_with_index do |_rate, i|
-      @sb[:rate_details][i].rate               = @edit[:new][:details][i][:rate]
-      @sb[:rate_details][i].per_time           = @edit[:new][:details][i][:per_time]
-      @sb[:rate_details][i].per_unit           = @edit[:new][:details][i][:per_unit]
-      @sb[:rate_details][i].chargeback_rate_id = @sb[:rate].id
+      sb_temp[i].rate               = @edit[:new][:details][i][:rate]
+      sb_temp[i].per_time           = @edit[:new][:details][i][:per_time]
+      sb_temp[i].per_unit           = @edit[:new][:details][i][:per_unit]
+      sb_temp[i].start_date         = @edit[:new][:details][i][:start_date]
+      sb_temp[i].end_date           = @edit[:new][:details][i][:end_date]
+      sb_temp[i].chargeback_rate_id = @sb[:rate].id
     end
+    @sb[:rate_details] = (sb_temp + @sb[:rate_details]).uniq
   end
 
   # Set record vars for save

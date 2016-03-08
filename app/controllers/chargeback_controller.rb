@@ -279,7 +279,7 @@ class ChargebackController < ApplicationController
                   # Copy the currency id of the rate detail linking with the rate_detail_currency
                   if detail[:type_currency]
                     id_currency = ChargebackRateDetailCurrency.find_by(:name => detail[:type_currency]).id
-                    detail.chargeback_rate_detail_currency_id = id_currency
+                    detail_new.chargeback_rate_detail_currency_id = id_currency
                   end
                   @sb[:rate_details].push(detail_new) unless @sb[:rate_details].include?(detail_new)
                   @sb[:tiers][detail_index] = rate_tiers

@@ -10,20 +10,23 @@ class ChargebackRateDetail < ApplicationRecord
   def find_rate(value)
     fixed_rate = 0.0
     variable_rate = 0.0
+    minimum_step = 0.0
     chargeback_tiers.each do |tier|
       next if value < tier.start
       next if value >= tier.end
       fixed_rate = tier.fixed_rate
       variable_rate = tier.variable_rate
+      minimum_step = tier.minimum_step
       break
     end
-    return fixed_rate, variable_rate
+    return fixed_rate, variable_rate, minimum_step
   end
 
   def cost(value)
     return 0.0 unless self.enabled?
     value = 1 if group == 'fixed'
-    (fixed_rate, variable_rate) = find_rate(value)
+    (fixed_rate, variable_rate, minimum_step) = find_rate(value)
+    value = value + minimum_step - value%minimum_step unless minimum_step.zero?
     hourly(fixed_rate) + hourly(variable_rate) * value
   end
 
@@ -109,7 +112,8 @@ class ChargebackRateDetail < ApplicationRecord
       s = ""
       ChargebackTier.where(:chargeback_rate_detail_id => id).each do |tier|
         # Example: Daily @ .02 per MHz
-        s += "#{per_time.to_s.capitalize} @ #{tier.fixed_rate} + #{tier.variable_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}\n"
+        minimum_step = tier.minimum_step.zero? ? "" : ", minimum step: #{tier.minimum_step}"
+        s += "#{per_time.to_s.capitalize} @ #{tier.fixed_rate} + #{tier.variable_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}#{minimum_step}\n"
       end
       s.chomp
     end

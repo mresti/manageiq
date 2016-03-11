@@ -10,16 +10,19 @@
     = r[:description]
   %td
     = text_field_tag("start_#{i}_0", @edit[:new][:tiers][i.to_i][0][:start],
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+      :maxlength => MAX_NAME_LEN, :size => 8 "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
     = text_field_tag("end_#{i}_0", @edit[:new][:tiers][i.to_i][0][:end],
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+      :maxlength => MAX_NAME_LEN, :size => 8 "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td{:align => 'right'}
     = text_field_tag("fixed_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:fixed_rate],
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+      :maxlength => MAX_NAME_LEN, :size => 8 "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td{:align => 'right'}
     = text_field_tag("variable_rate_#{i}_0", @edit[:new][:tiers][i.to_i][0][:variable_rate],
-      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+      :maxlength => MAX_NAME_LEN, :size => 8, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+  %td{:align => 'right'}
+    = text_field_tag("minimum_step_#{i}_0", @edit[:new][:tiers][i.to_i][0][:minimum_step],
+      :maxlength => MAX_NAME_LEN, :size => 8, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td
     = button_tag(_(""),
                  :class   => "btn btn-default pficon-add-circle-o",

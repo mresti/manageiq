@@ -20,6 +20,7 @@
         %th{:rowspan => "2"}= _('Interval start')
         %th{:rowspan => "2"}= _('Interval end')
         %th{:colspan => "2"}= _('Rate')
+        %th{:rowspan => "2"}= _('Minimum step')
         %th{:rowspan => "2"}= _('Currency')
         %th{:rowspan => "2"}= _('Per Time')
         %th{:rowspan => "2"}= _('Per Unit')
@@ -32,7 +33,7 @@
         - if @cur_group != detail[:group]
           - @cur_group = detail[:group]
           %tr
-            %td.active{:colspan => "9"} &nbsp;
+            %td.active{:colspan => "10"} &nbsp;
         - num_tiers = detail.chargeback_tiers.to_a.blank? ? "1" : detail.chargeback_tiers.to_a.length.to_s
         %tr
           %td{:rowspan => num_tiers}
@@ -48,6 +49,8 @@
             = tier.fixed_rate ? tier.fixed_rate : 0.0
           %td{:align => "right"}
             = tier.variable_rate ? tier.variable_rate : 0.0
+          %td{:align => "right"}
+            = tier.minimum_step ? tier.minimum_step : 0.0
           %td{:rowspan => num_tiers}
             = "#{detail.detail_currency.symbol} [#{detail.detail_currency.code}]"
           %td{:rowspan => num_tiers}
@@ -65,5 +68,7 @@
               = tier.fixed_rate
             %td{:align => "right"}
               = tier.variable_rate
+            %td{:align => "right"}
+              = tier.minimum_step
         %tr
-          %td{:colspan => "9"}
+          %td{:colspan => "10"}

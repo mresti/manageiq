@@ -228,6 +228,7 @@ class ChargebackController < ApplicationController
                                            :end                       => tier[:end],
                                            :fixed_rate                => tier[:fixed_rate],
                                            :variable_rate             => tier[:variable_rate],
+                                           :minimum_step              => tier[:minimum_step],
                                            :chargeback_rate_detail_id => detail_copy.id)
             @sb[:tiers][detail_index].push(tier_copy)
           end
@@ -267,6 +268,7 @@ class ChargebackController < ApplicationController
                                                   :end                       => tier.delete(:end),
                                                   :fixed_rate                => tier.delete(:fixed_rate),
                                                   :variable_rate             => tier.delete(:variable_rate),
+                                                  :minimum_step              => tier.delete(:minimum_step),
                                                   :chargeback_rate_detail_id => detail_new.id)
                     rate_tiers.append(tier_new)
                   end
@@ -393,6 +395,7 @@ class ChargebackController < ApplicationController
     @edit[:new][:tiers][ii][tier_index][:end] = Float::INFINITY
     @edit[:new][:tiers][ii][tier_index][:fixed_rate] = 0.0
     @edit[:new][:tiers][ii][tier_index][:variable_rate] = 0.0
+    @edit[:new][:tiers][ii][tier_index][:minimum_step] = 0.0
     add_row(detail_index, tier_index-1)
   end
 
@@ -658,6 +661,7 @@ class ChargebackController < ApplicationController
         temp2 = {}
         temp2[:fixed_rate] = tier.fixed_rate
         temp2[:variable_rate] = tier.variable_rate
+        temp2[:minimum_step] = tier.minimum_step
         temp2[:start] = tier.start
         temp2[:end] = tier.end
         temp2[:chargeback_rate_detail_id] = detail.id
@@ -696,6 +700,8 @@ class ChargebackController < ApplicationController
           params["fixed_rate_#{detail_index}_#{tier_index}".to_sym] if params["fixed_rate_#{detail_index}_#{tier_index}".to_sym]
         @edit[:new][:tiers][detail_index][tier_index][:variable_rate] =
           params["variable_rate_#{detail_index}_#{tier_index}".to_sym] if params["variable_rate_#{detail_index}_#{tier_index}".to_sym]
+        @edit[:new][:tiers][detail_index][tier_index][:minimum_step] =
+          params["minimum_step_#{detail_index}_#{tier_index}".to_sym] if params["minimum_step_#{detail_index}_#{tier_index}".to_sym]
         @edit[:new][:tiers][detail_index][tier_index][:start] =
           params["start_#{detail_index}_#{tier_index}".to_sym] if params["start_#{detail_index}_#{tier_index}".to_sym]
         @edit[:new][:tiers][detail_index][tier_index][:end] =
@@ -718,6 +724,7 @@ class ChargebackController < ApplicationController
                              :end                       => @edit[:new][:tiers][detail_index][tier_index][:end],
                              :fixed_rate                => @edit[:new][:tiers][detail_index][tier_index][:fixed_rate],
                              :variable_rate             => @edit[:new][:tiers][detail_index][tier_index][:variable_rate],
+                             :minimum_step              => @edit[:new][:tiers][detail_index][tier_index][:minimum_step],
                              :chargeback_rate_detail_id => @sb[:rate_details][detail_index].id)
         if tier_index >= @sb[:num_tiers][detail_index]
           break

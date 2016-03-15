@@ -20,6 +20,7 @@
       :rate: 0
       :per_time: daily
       :per_unit: cpu
+      :measure: CPU Units
       :type_currency: Dollars
     - :description: Used Memory
       :group: memory
@@ -63,11 +64,13 @@
       :rate: 0
       :per_time: daily
       :type_currency: Dollars
+      :measure: Fixed Units
     - :description: Fixed Compute Cost 2
       :group: fixed
       :source: compute_2
       :rate: 0
       :per_time: monthly
+      :measure: Fixed Units
       :type_currency: Dollars
 - :description: Default
   :guid: 7d7aaf20-5214-11df-a888-001d09066d98
@@ -97,10 +100,12 @@
       :source: storage_1
       :rate: 0
       :per_time: daily
+      :measure: Fixed Units
       :type_currency: Dollars
     - :description: Fixed Storage Cost 2
       :group: fixed
       :source: storage_2
       :rate: 0
       :per_time: monthly
+      :measure: Fixed Units
       :type_currency: Dollars

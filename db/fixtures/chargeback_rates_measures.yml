@@ -11,3 +11,11 @@
   :units_display: ["Bps","KBps","MBps","GBps"]
   :units: ["bps","kbps","mbps","gbps"]
   :step: '1024'
+- :name: CPU Units
+  :units_display: ["CPU"]
+  :units: ["cpu"]
+  :step: '1024'
+- :name: Fixed Units
+  :units_display: ["fixed"]
+  :units: ["fixed"]
+  :step: '1024's

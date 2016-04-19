@@ -313,6 +313,7 @@ class ChargebackController < ApplicationController
     tier[:finish]        = Float::INFINITY
     tier[:fixed_rate]    = 0.0
     tier[:variable_rate] = 0.0
+    tier[:minimum_step]  = 0.0
 
     code_currency = ChargebackRateDetailCurrency.find_by(:id => detail[:currency]).code
     add_row(detail_index, tier_index - 1, code_currency)
@@ -632,7 +633,7 @@ class ChargebackController < ApplicationController
       # Save tiers into @edit
       (0..@edit[:new][:num_tiers][detail_index].to_i - 1).each do |tier_index|
         tier = @edit[:new][:tiers][detail_index][tier_index] || {}
-        %i{fixed_rate variable_rate start finish}.each do |field|
+        %i{fixed_rate variable_rate minimum_step start finish}.each do |field|
           key = "#{field}_#{detail_index}_#{tier_index}".to_sym
           tier[field] = params[key] if params[key]
         end
@@ -666,6 +667,7 @@ class ChargebackController < ApplicationController
         rate_tier.chargeback_rate_detail_id = rate_detail.id
         rate_tier.fixed_rate  = tier[:fixed_rate]
         rate_tier.variable_rate = tier[:variable_rate]
+        rate_tier.minimum_step = tier[:minimum_step]
         rate_tiers.push(rate_tier)
       end
       @rate_tiers[detail_index] = rate_tiers

@@ -123,7 +123,7 @@ class ChargebackRateDetail < ApplicationRecord
         # Example: Daily @ .02 per MHz from 0.0 to Infinity
         minimum_step = tier.minimum_step.zero? ? "" : ", minimum step: #{tier.minimum_step}"
         s += "#{per_time.to_s.capitalize} @ #{tier.fixed_rate} + "\
-              "#{tier.variable_rate} per #{per_unit_display} from #{tier.start} to #{tier.end}#{minimum_step}\n"
+              "#{tier.variable_rate} per #{per_unit_display} from #{tier.start} to #{tier.finish}#{minimum_step}\n"
       end
       s.chomp
     end

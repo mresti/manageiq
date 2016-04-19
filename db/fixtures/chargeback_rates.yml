@@ -17,6 +17,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.02
+          :minimum_step: 0.0
     - :description: Used CPU Cores
       :group: cpu
       :source: used
@@ -29,6 +30,7 @@
           :finish: Infinity
           :fixed_rate: 1.0
           :variable_rate: 0.02
+          :minimum_step: 0.0
     - :description: Allocated CPU Count
       :group: cpu
       :source: allocated
@@ -41,6 +43,7 @@
           :finish: Infinity
           :fixed_rate: 1.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
     - :description: Used Memory
       :group: memory
       :source: used
@@ -54,6 +57,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.02
+          :minimum_step: 0.0
     - :description: Allocated Memory
       :group: memory
       :source: allocated
@@ -67,6 +71,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
     - :description: Used Network I/O
       :group: net_io
       :source: used
@@ -80,10 +85,12 @@
           :finish: 100
           :fixed_rate: 0.5
           :variable_rate: 0.0
+          :minimum_step: 0.0
         - :start: 100
           :finish: Infinity
           :fixed_rate: 0.5
           :variable_rate: 0.005
+          :minimum_step: 0.0
     - :description: Used Disk I/O
       :group: disk_io
       :source: used
@@ -97,6 +104,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.005
+          :minimum_step: 0.0
     - :description: Fixed Compute Cost 1
       :group: fixed
       :source: compute_1
@@ -107,6 +115,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
     - :description: Fixed Compute Cost 2
       :group: fixed
       :source: compute_2
@@ -117,6 +126,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
 - :description: Default
   :guid: 7d7aaf20-5214-11df-a888-001d09066d98
   :rate_type: Storage
@@ -135,6 +145,7 @@
           :finish: Infinity
           :fixed_rate: 1.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
     - :description: Used Disk Storage
       :group: storage
       :source: used
@@ -148,6 +159,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 2.0
+          :minimum_step: 0.0
     - :description: Fixed Storage Cost 1
       :group: fixed
       :source: storage_1
@@ -158,6 +170,7 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.0
+          :minimum_step: 0.0
     - :description: Fixed Storage Cost 2
       :group: fixed
       :source: storage_2
@@ -168,3 +181,4 @@
           :finish: Infinity
           :fixed_rate: 0.0
           :variable_rate: 0.0
+          :minimum_step: 0.0

@@ -33,6 +33,8 @@ describe ChargebackRateDetail do
     expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate * (cvalue+minimum_step-cvalue%minimum_step) + cbd.hourly(fixed_rate))
 
     cbd.group = 'fixed'
+    minimum_step = 0
+    cbt.update(:minimum_step => minimum_step)
     expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate + cbd.hourly(fixed_rate))
 
     cbd.enabled = false
@@ -124,7 +126,7 @@ describe ChargebackRateDetail do
                              :finish => Float::INFINITY, :fixed_rate => 5.0, :variable_rate => 2.5, :minimum_step => 1.0)
     cbd.update(:chargeback_tiers => [cbt1, cbt2])
     expect(cbd.friendly_rate).to eq("Monthly @ 1.0 + 2.0 per Megabytes from 0.0 to 5.0, minimum step: 0.5\n\
-Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity, minimum step: 1")
+Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity, minimum step: 1.0")
   end
 
   it "#per_unit_display_without_measurements" do

@@ -38,6 +38,7 @@
         %th{:rowspan => "2"}= _('Per Unit')
         %th{:colspan => "2"}= _('Range')
         %th{:colspan => "2"}= _('Rate')
+        %th{:rowspan => "2"}= _('Minimum step')
         %th{:rowspan => "2"}= _('Actions')
         %th{:rowspan => "2"}= _('Currency')
       %tr
@@ -53,7 +54,7 @@
         - if @cur_group != detail[:group]
           - @cur_group = detail[:group]
           %tr
-            %td.active{:colspan => "10"} &nbsp;
+            %td.active{:colspan => "11"} &nbsp;
         - num_tiers = @edit[:new][:tiers][detail_index].blank? ? "1" : @edit[:new][:tiers][detail_index].length.to_s
 
         %tr.rdetail{:id => "rate_detail_row_#{detail_index}_0"}
@@ -90,6 +91,9 @@
           %td{:align => 'right'}
             = text_field_tag("variable_rate_#{detail_index}_0", @edit[:new][:tiers][detail_index][0][:variable_rate],
               :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+          %td{:align => 'right'}
+            = text_field_tag("minimum_step_#{detail_index}_0", @edit[:new][:tiers][detail_index][0][:minimum_step],
+              :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
           %td.action
             = button_tag(_("Add"),
                          :class   => "btn btn-default",
@@ -117,6 +121,9 @@
                 :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
             %td{:align => "right"}
               = text_field_tag("variable_rate_#{detail_index}_#{tier_index}", tier[:variable_rate],
+                :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+            %td{:align => "right"}
+              = text_field_tag("minimum_step_#{detail_index}_#{tier_index}", tier[:minimum_step],
                 :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
             %td.action
               = button_tag(_("Delete"),

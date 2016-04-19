@@ -19,6 +19,7 @@
         %th{:rowspan => "2"}= _('Description')
         %th{:colspan => "2"}= _('Range')
         %th{:colspan => "2"}= _('Rate')
+        %th{:rowspan => "2"}= _('Minimum step')
         %th{:rowspan => "2"}= _('Units')
       %tr
         %th= _("Start")
@@ -34,7 +35,7 @@
         - if @cur_group != detail[:group]
           - @cur_group = detail[:group]
           %tr
-            %td.active{:colspan => "9"} &nbsp;
+            %td.active{:colspan => "10"} &nbsp;
         - num_tiers = detail.chargeback_tiers.to_a.blank? ? "1" : tiers.to_a.length.to_s
         %tr
           %td{:rowspan => num_tiers}
@@ -50,6 +51,8 @@
             = tier.fixed_rate ? tier.fixed_rate : 0.0
           %td{:align => "right"}
             = tier.variable_rate ? tier.variable_rate : 0.0
+          %td{:align => "right"}
+            = tier.minimum_step ? tier.minimum_step : 0.0
           %td{:align => "right", :rowspan => num_tiers}
             = detail.show_rates(code_currency)
         - (1..num_tiers.to_i - 1).each do |tier_index|
@@ -63,5 +66,7 @@
               = tier.fixed_rate
             %td{:align => "right"}
               = tier.variable_rate
+            %td{:align => "right"}
+              = tier.minimum_step
         %tr
-          %td{:colspan => "9"}
+          %td{:colspan => "10"}

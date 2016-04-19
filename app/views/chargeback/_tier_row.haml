@@ -18,6 +18,9 @@
   %td{:align => 'right'}
     = text_field_tag("variable_rate_#{i}_#{n - 1}", @edit[:new][:tiers][i.to_i][n - 1][:variable_rate],
       :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
+  %td{:align => 'right'}
+    = text_field_tag("minimum_step_#{i}_#{n - 1}", @edit[:new][:tiers][i.to_i][n - 1][:minimum_step],
+      :maxlength => MAX_NAME_LEN, "data-miq_observe" => {:interval => '.5', :url => url}.to_json)
   %td.action
     = button_tag(_("Delete"),
                  :class   => "btn btn-default",

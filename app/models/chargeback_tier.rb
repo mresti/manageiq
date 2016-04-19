@@ -21,4 +21,8 @@ class ChargebackTier < ApplicationRecord
   def ends_with_infinity?
     finish == Float::INFINITY
   end
+
+  def init
+    self.minimum_step ||= 0.0
+  end
 end

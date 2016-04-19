@@ -5,6 +5,7 @@ describe ChargebackRateDetail do
     variable_rate = 8.26
     tier_start = 0
     tier_finish = Float::INFINITY
+    minimum_step = 0
     per_time = 'monthly'
     per_unit = 'megabytes'
     cbd = FactoryGirl.build(:chargeback_rate_detail,
@@ -16,9 +17,20 @@ describe ChargebackRateDetail do
                              :start                     => tier_start,
                              :finish                    => tier_finish,
                              :fixed_rate                => fixed_rate,
-                             :variable_rate             => variable_rate)
+                             :variable_rate             => variable_rate,
+                             :minimum_step              => minimum_step)
     cbd.update(:chargeback_tiers => [cbt])
     expect(cbd.cost(cvalue)).to eq(cvalue * cbd.hourly_rate + cbd.hourly(fixed_rate))
+    minimum_step = 5
+    cbt.update(:minimum_step => minimum_step)
+    expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate * (cvalue+minimum_step-cvalue%minimum_step) + cbd.hourly(fixed_rate))
+    expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate * (((cvalue/minimum_step).to_i+1)*minimum_step) + cbd.hourly(fixed_rate))
+    minimum_step = 50
+    cbt.update(:minimum_step => minimum_step)
+    expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate * (cvalue+minimum_step-cvalue%minimum_step) + cbd.hourly(fixed_rate))
+    minimum_step = 0.8
+    cbt.update(:minimum_step => minimum_step)
+    expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate * (cvalue+minimum_step-cvalue%minimum_step) + cbd.hourly(fixed_rate))
 
     cbd.group = 'fixed'
     expect(cbd.cost(cvalue)).to eq(cbd.hourly_rate + cbd.hourly(fixed_rate))
@@ -100,18 +112,19 @@ describe ChargebackRateDetail do
 
     cbd = FactoryGirl.build(:chargeback_rate_detail, :per_unit => 'cpu', :per_time => 'monthly')
     cbt = FactoryGirl.create(:chargeback_tier, :start => 0, :chargeback_rate_detail_id => cbd.id,
-                             :finish => Float::INFINITY, :fixed_rate => 1.0, :variable_rate => 2.0)
+                             :finish => Float::INFINITY, :fixed_rate => 1.0, :variable_rate => 2.0,
+                             :minimum_step => 0.1)
     cbd.update(:chargeback_tiers => [cbt])
-    expect(cbd.friendly_rate).to eq("Monthly @ 1.0 + 2.0 per Cpu from 0.0 to Infinity")
+    expect(cbd.friendly_rate).to eq("Monthly @ 1.0 + 2.0 per Cpu from 0.0 to Infinity, minimum step: 0.1")
 
     cbd = FactoryGirl.build(:chargeback_rate_detail, :per_unit => 'megabytes', :per_time => 'monthly')
     cbt1 = FactoryGirl.create(:chargeback_tier, :start => 0.0, :chargeback_rate_detail_id => cbd.id,
-                             :finish => 5.0, :fixed_rate => 1.0, :variable_rate => 2.0)
+                             :finish => 5.0, :fixed_rate => 1.0, :variable_rate => 2.0, :minimum_step => 0.5)
     cbt2 = FactoryGirl.create(:chargeback_tier, :start => 5.0, :chargeback_rate_detail_id => cbd.id,
-                             :finish => Float::INFINITY, :fixed_rate => 5.0, :variable_rate => 2.5)
+                             :finish => Float::INFINITY, :fixed_rate => 5.0, :variable_rate => 2.5, :minimum_step => 1.0)
     cbd.update(:chargeback_tiers => [cbt1, cbt2])
-    expect(cbd.friendly_rate).to eq("Monthly @ 1.0 + 2.0 per Megabytes from 0.0 to 5.0\n\
-Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity")
+    expect(cbd.friendly_rate).to eq("Monthly @ 1.0 + 2.0 per Megabytes from 0.0 to 5.0, minimum step: 0.5\n\
+Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity, minimum step: 1")
   end
 
   it "#per_unit_display_without_measurements" do

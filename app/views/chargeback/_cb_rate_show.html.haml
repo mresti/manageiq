@@ -19,6 +19,7 @@
         %th{:rowspan => "2"}= _('Description')
         %th{:colspan => "2"}= _('Range')
         %th{:colspan => "2"}= _('Rate')
+        %th{:rowspan => "2"}= _('Cost Method')
         %th{:rowspan => "2"}= _('Units')
       %tr
         %th= _("Start")
@@ -50,6 +51,8 @@
             = tier.fixed_rate ? tier.fixed_rate : 0.0
           %td{:align => "right"}
             = tier.variable_rate ? tier.variable_rate : 0.0
+          %td{:align => "right", :rowspan => num_tiers}
+            = detail.cost_method.upcase_first
           %td{:align => "right", :rowspan => num_tiers}
             = detail.show_rates(code_currency)
         - (1..num_tiers.to_i - 1).each do |tier_index|

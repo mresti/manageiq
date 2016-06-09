@@ -556,6 +556,7 @@ class ChargebackController < ApplicationController
         temp[:detail_measure] = {}
         temp[:detail_measure][:measures] = detail.detail_measure.measures
         temp[:chargeback_rate_detail_measure_id] = detail.detail_measure.id
+        temp[:cost_method] = detail.cost_method
       end
 
       temp[:id] = params[:typ] == "copy" ? nil : detail.id
@@ -593,7 +594,7 @@ class ChargebackController < ApplicationController
   def cb_rate_get_form_vars
     @edit[:new][:description] = params[:description] if params[:description]
     @edit[:new][:details].each_with_index do |detail, detail_index|
-      %i{per_time per_unit}.each do |measure|
+      %i{per_time per_unit cost_method}.each do |measure|
         key = "#{measure}_#{detail_index}".to_sym
         detail[measure] = params[key] if params[key]
       end

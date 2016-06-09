@@ -9,6 +9,7 @@
       %th{:colspan => "2"}= _('Range')
       %th{:colspan => "2"}= _('Rate')
       %th{:rowspan => "2"}= _('Actions')
+      %th{:rowspan => "2"}= _('Cost Method')
       %th{:rowspan => "2"}= _('Currency')
     %tr
       %th= _("Start")
@@ -63,6 +64,8 @@
                                  :onclick => "miqAjaxButton('#{url_for(:action => "cb_tier_add",
                                                                        :detail_index => detail_index,
                                                                        :button => "add")}');")
+        %td{:rowspan => num_tiers}
+          = select_tag("cost_method_#{detail_index}", options_for_select({:Simple => "simple", :Aggregate => "aggregate"}, detail[:cost_method]), "data-miq_observe" => {:url => url}.to_json)
         /Show the code of the currency selected by the user
         %td{:id => "column_currency_#{detail_index}", :rowspan => num_tiers}
           = @edit[:new][:code_currency]

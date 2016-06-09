@@ -9,7 +9,7 @@ class ChargebackRateDetail < ApplicationRecord
   validates :group, :source, :chargeback_rate, :presence => true
   validate :contiguous_tiers?
 
-  FORM_ATTRIBUTES = %i(description per_time per_unit metric group source metric).freeze
+  FORM_ATTRIBUTES = %i(description per_time per_unit metric group source cost_method).freeze
 
   # Set the rates according to the tiers
   def find_rate(value)

@@ -12,6 +12,7 @@
       :per_unit: megahertz
       :measure: Hz Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -24,6 +25,7 @@
       :per_time: daily
       :per_unit: cpu core
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -36,6 +38,7 @@
       :per_time: daily
       :per_unit: cpu
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -49,6 +52,7 @@
       :per_unit: megabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -62,6 +66,7 @@
       :per_unit: megabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -75,6 +80,7 @@
       :per_unit: kbps
       :measure: Bytes per Second Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: 100
@@ -92,6 +98,7 @@
       :per_unit: kbps
       :measure: Bytes per Second Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -102,6 +109,7 @@
       :source: compute_1
       :per_time: daily
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -112,6 +120,7 @@
       :source: compute_2
       :per_time: monthly
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -130,6 +139,7 @@
       :per_unit: gigabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -143,6 +153,7 @@
       :per_unit: gigabytes
       :measure: Bytes Units
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -153,6 +164,7 @@
       :source: storage_1
       :per_time: daily
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity
@@ -163,6 +175,7 @@
       :source: storage_2
       :per_time: monthly
       :type_currency: Dollars
+      :cost_method: simple
       :tiers:
         - :start: 0
           :finish: Infinity

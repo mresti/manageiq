@@ -98,7 +98,12 @@ class Chargeback < ActsAsArModel
 
         rec    = r.metric && perf.respond_to?(r.metric) ? perf : perf.resource
         metric = r.metric.nil? ? 0 : rec.send(r.metric) || 0
-        cost   = r.cost(metric)
+
+        cost = if r.cost_method == "simple"
+                 r.cost_simple(metric)
+               else
+                 r.cost_aggregate(metric)
+               end
 
         col_hash = {}
         unless (report_col_options.keys & [metric_key, cost_key]).empty?

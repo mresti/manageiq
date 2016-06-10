@@ -33,11 +33,28 @@ class ChargebackRateDetail < ApplicationRecord
     :yearly  => "Year"
   }
 
-  def cost(value)
+  def cost_simple(value)
     return 0.0 unless self.enabled?
     value = 1 if group == 'fixed'
     (fixed_rate, variable_rate) = find_rate(value)
     hourly(fixed_rate) + hourly(variable_rate) * value
+  end
+
+  def cost_aggregate(value)
+    return 0.0 unless self.enabled?
+    value = 1 if group == 'fixed'
+    cost = 0
+    fixed_rate = 0.0
+    variable_rate = 0.0
+    chargeback_tiers.each do |tier|
+      if (value == 0) || ((value > rate_adjustment(tier.start)) && (value <= rate_adjustment(tier.finish)))
+        cost += hourly(tier.fixed_rate) + hourly(tier.variable_rate) * (value - rate_adjustment(tier.start))
+        break
+      else
+        cost += hourly(tier.fixed_rate) + hourly(tier.variable_rate) * (rate_adjustment(tier.finish) - rate_adjustment(tier.start))
+      end
+    end
+    return cost
   end
 
   def hourly(rate)

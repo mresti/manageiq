@@ -9,7 +9,7 @@ describe ChargebackRateDetail do
     end
   end
 
-  it "#cost" do
+  it "#cost_simple" do
     cvalue   = 42.0
     fixed_rate = 5.0
     variable_rate = 8.26
@@ -17,10 +17,12 @@ describe ChargebackRateDetail do
     tier_finish = Float::INFINITY
     per_time = 'monthly'
     per_unit = 'megabytes'
+    cost_method = 'simple'
     cbd = FactoryGirl.build(:chargeback_rate_detail,
-                             :per_time => per_time,
-                             :per_unit => per_unit,
-                             :enabled  => true)
+                             :per_time    => per_time,
+                             :per_unit    => per_unit,
+                             :cost_method => cost_method,
+                             :enabled     => true)
     cbt = FactoryGirl.create(:chargeback_tier,
                              :chargeback_rate_detail_id => cbd.id,
                              :start                     => tier_start,
@@ -28,13 +30,40 @@ describe ChargebackRateDetail do
                              :fixed_rate                => fixed_rate,
                              :variable_rate             => variable_rate)
     cbd.update(:chargeback_tiers => [cbt])
-    expect(cbd.cost(cvalue)).to eq(cvalue * cbd.hourly(variable_rate) + cbd.hourly(fixed_rate))
+    expect(cbd.cost_simple(cvalue)).to eq(cvalue * cbd.hourly(variable_rate) + cbd.hourly(fixed_rate))
 
     cbd.group = 'fixed'
-    expect(cbd.cost(cvalue)).to eq(cbd.hourly(variable_rate) + cbd.hourly(fixed_rate))
+    expect(cbd.cost_simple(cvalue)).to eq(cbd.hourly(variable_rate) + cbd.hourly(fixed_rate))
 
     cbd.enabled = false
-    expect(cbd.cost(cvalue)).to eq(0.0)
+    expect(cbd.cost_simple(cvalue)).to eq(0.0)
+  end
+
+  it "#cost_aggregate" do
+    cvalue   = 50.0
+    per_time = 'daily'
+    per_unit = 'megabytes'
+    cbd = FactoryGirl.build(:chargeback_rate_detail_memory_allocated_with_tiers,
+                             :per_time => per_time,
+                             :per_unit => per_unit,
+                             :enabled  => true)
+
+     ################################################################################
+     # Tiers:                                                                       #
+     #    Range      Fixed rate      Variable rate                                  #
+     #   [0,20]            0.1                 0.2                                  #
+     #  [20,40]            0.3                 0.4                                  #
+     # [40,Inf]            0.5                 0.6                                  #
+     # ---------------------------------------------------------------------------- #
+     # Cost Calculation:                                                            #
+     #    Range      Fixed rate      Variable rate        Value                     #
+     #   [0,20]   [        0.1    +            0.2   *    (20-0)  ]/24              #
+     #  [20,40]   [        0.3    +            0.4   *   (40-20)  ]/24              #
+     # [40,Inf]   [        0.5    +            0.6   *   (50-40)  ]/24              #
+     # ---------------------------------------------------------------------------- #
+     # Cost = 0.7874999999999999                                                    #
+     ################################################################################
+    expect(cbd.cost_aggregate(cvalue)).to eq(0.7874999999999999)
   end
 
   it "#hourly" do
@@ -173,7 +202,7 @@ Monthly @ 5.0 + 2.5 per Megabytes from 5.0 to Infinity")
                                       :metric                            => 'derived_memory_available',
                                       :per_time                          => 'monthly',
                                       :chargeback_rate_detail_measure_id => cbdm.id)
-    expect(cbd_bytes.cost(100)).to eq(cbd_gigabytes.cost(100))
+    expect(cbd_bytes.cost_simple(100)).to eq(cbd_gigabytes.cost_simple(100))
   end
 
   it "#show_rates" do

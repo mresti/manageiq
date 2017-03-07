@@ -6464,7 +6464,7 @@ showback_configurations:
 - types
 - updated_at
 - created_at
-showbacks:
+showback_events:
 - id
 - data
 - event_init

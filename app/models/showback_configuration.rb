@@ -1,4 +1,6 @@
 class ShowbackConfiguration < ApplicationRecord
+  has_many :showbacks
+
   validates :name,        :presence   => true
   validates :description, :presence   => true
   validates :name,        :uniqueness => true

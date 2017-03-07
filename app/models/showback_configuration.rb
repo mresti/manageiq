@@ -1,5 +1,5 @@
 class ShowbackConfiguration < ApplicationRecord
-  has_many :showbacks
+  has_many :showback_events
 
   validates :name,        :presence   => true
   validates :description, :presence   => true

@@ -6465,6 +6465,16 @@ showback_configurations:
 - types
 - updated_at
 - created_at
+showbacks:
+- id
+- data
+- event_init
+- event_end
+- id_obj
+- type_obj
+- showback_configuration_id
+- updated_at
+- created_at
 snapshots:
 - id
 - uid

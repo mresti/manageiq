@@ -36,6 +36,13 @@ describe ShowbackEvent do
       expect(showback_event.errors[:start_time]).to include "can't be blank"
     end
 
+    it "should fails start time is after of end time" do
+      showback_event.start_time = 1.hour.ago
+      showback_event.end_time = 4.hours.ago
+      showback_event.valid?
+      expect(showback_event.errors[:start_time]).to include "Start time should be before end time"
+    end
+
     it "should ensure presence of end_time" do
       showback_event.end_time = nil
       showback_event.valid?

@@ -7,6 +7,14 @@ class ShowbackEvent < ApplicationRecord
   validates :id_obj,     :presence => true
   validates :type_obj,   :presence => true
 
+  validate :start_time_before_end_time
+
+  def start_time_before_end_time
+    if self.start_time > self.end_time
+      errors.add(:start_time, "Start time should be before end time")
+    end
+  end
+
   serialize :data, JSON # Implement data column as a JSON
   default_value_for(:data) { {} }
 

@@ -10,11 +10,17 @@ describe ShowbackEvent do
     it "should validate correct data type" do
       showback_event.data = data
       showback_event.valid?
-      expect(showback_event.errors[:data]).to include "can't be blank"
+      expect(showback_event.errors[:data]).not_to eq("can't be blank")
     end
 
     it "should invalidate incorrect data type" do
       showback_event.data = {}
+      showback_event.valid?
+      expect(showback_event.errors[:data]).to include "can't be blank"
+    end
+
+    it "should ensure presence of data" do
+      showback_event.data = "AA"
       showback_event.valid?
       expect(showback_event.errors[:data]).to include "can't be blank"
     end

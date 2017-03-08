@@ -10,13 +10,15 @@ class CreateShowbackEvents < ActiveRecord::Migration[5.0]
       t.timestamp  :updated_at
       t.timestamp  :created_at
     end
+    add_index  :showback_events, :data
     add_index  :showback_events, :id_obj
     add_index  :showback_events, :showback_configuration_id
   end
 
   def down
-    remove_index  :showback_events, :id_obj
     remove_index  :showback_events, :showback_configuration_id
+    remove_index  :showback_events, :id_obj
+    remove_index  :showback_events, :data
     drop_table :showback_events
   end
 end

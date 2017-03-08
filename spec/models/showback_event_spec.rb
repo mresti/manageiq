@@ -25,16 +25,16 @@ describe ShowbackEvent do
       expect(showback_event.errors[:data]).to include "can't be blank"
     end
 
-    it "should ensure presence of event_init" do
-      showback_event.event_init = nil
+    it "should ensure presence of start_time" do
+      showback_event.start_time = nil
       showback_event.valid?
-      expect(showback_event.errors[:event_init]).to include "can't be blank"
+      expect(showback_event.errors[:start_time]).to include "can't be blank"
     end
 
-    it "should ensure presence of event_end" do
-      showback_event.event_end = nil
+    it "should ensure presence of end_time" do
+      showback_event.end_time = nil
       showback_event.valid?
-      expect(showback_event.errors[:event_end]).to include "can't be blank"
+      expect(showback_event.errors[:end_time]).to include "can't be blank"
     end
 
     it "should ensure presence of id_obj" do

@@ -1,8 +1,7 @@
 describe ShowbackEvent do
-  context "validations" do
-    let(:data) { { 3.hour.ago => {"cpu_usage_rate_average" => 2, "cpu_usagemhz_rate_average" => 3} } }
-    let(:showback_event) { FactoryGirl.build(:showback_event) }
+  let(:showback_event) { FactoryGirl.build(:showback_event) }
 
+  context "validations" do
     it "has a valid factory" do
       expect(showback_event).to be_valid
     end
@@ -53,6 +52,22 @@ describe ShowbackEvent do
       showback_event.type_obj = nil
       showback_event.valid?
       expect(showback_event.errors[:type_obj]).to include "can't be blank"
+    end
+  end
+
+  describe '#validate_format' do
+    it 'fails validation if no data' do
+      event = ShowbackEvent.new
+      expect(event.validate_format).not_to be_nil
+    end
+
+    it 'passes validation with correct JSON data' do
+      expect(showback_event.validate_format).to be_nil
+    end
+
+    it 'fails validations with incorrect JSON data' do
+      event = FactoryGirl.build(:showback_event, :data => ":-Invalid:\n-JSON")
+      expect(event.validate_format).not_to be_nil
     end
   end
 end

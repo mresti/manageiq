@@ -9,4 +9,11 @@ class ShowbackEvent < ApplicationRecord
 
   serialize :data, JSON # Implement data column as a JSON
   default_value_for(:data) { {} }
+
+  # return the parsing error message if not valid JSON; otherwise nil
+  def validate_format
+    JSON.parse(data) && nil if content
+  rescue JSON::ParserError => err
+    err.message
+  end
 end

@@ -6468,8 +6468,8 @@ showback_configurations:
 showback_events:
 - id
 - data
-- event_init
-- event_end
+- start_time
+- end_time
 - id_obj
 - type_obj
 - showback_configuration_id

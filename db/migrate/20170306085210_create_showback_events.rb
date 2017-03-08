@@ -17,5 +17,6 @@ class CreateShowbackEvents < ActiveRecord::Migration[5.0]
   def down
     remove_index  :showback_events, :showback_configuration_id
     remove_index  :showback_events, :id_obj
+    drop_table :showback_events
   end
 end

@@ -62,7 +62,7 @@ describe ShowbackEvent do
     end
   end
 
-  describe '#validate_format' do
+  context '#validate_format' do
     it 'fails validation if no data' do
       event = ShowbackEvent.new
       expect(event.validate_format).not_to be_nil

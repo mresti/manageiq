@@ -25,6 +25,7 @@ describe ShowbackEvent do
       expect(showback_event.errors[:data]).to include "can't be blank"
     end
 
+
     it "should ensure presence of start_time" do
       showback_event.start_time = nil
       showback_event.valid?

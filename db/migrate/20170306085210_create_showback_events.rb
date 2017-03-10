@@ -2,8 +2,8 @@ class CreateShowbackEvents < ActiveRecord::Migration[5.0]
   def up
     create_table :showback_events do |t|
       t.json       :data
-      t.timestamp  :event_init  # when start the event
-      t.timestamp  :event_end   # when finish the event
+      t.timestamp  :start_time  # when start the event
+      t.timestamp  :end_time    # when finish the event
       t.bigint     :id_obj      # id of name model about reference the event in C&U
       t.string     :type_obj    # name model about reference the event in C&U
       t.bigint     :showback_configuration_id

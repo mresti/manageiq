@@ -6485,6 +6485,13 @@ showback_configurations:
 - types
 - updated_at
 - created_at
+showback_costs:
+- id
+- types
+- method
+- calculations
+- updated_at
+- created_at
 showback_events:
 - id
 - data

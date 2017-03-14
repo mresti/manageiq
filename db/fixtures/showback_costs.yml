@@ -1,0 +1,9 @@
+---
+- :types: "CPU"
+  :operations:
+    - :method: "average"
+      :calculations: "cpu_used * 30 / 31"
+    - :method: "maximum"
+      :calculations: "maximum(cpu_used)"
+    - :method: "minimum"
+      :calculations: "minimum(cpu_used)"

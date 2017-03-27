@@ -80,7 +80,6 @@ RSpec.describe ShowbackBucket, type: :model do
       expect{ charge.variable_cost = 3 }.to change(charge, :variable_cost).from(nil).to(3)
     end
 
-
     pending 'charges can be updated for an event'
     pending 'charges can be updated for all events in the bucket'
     pending 'charges can be deleted for an event'

@@ -32,8 +32,8 @@ MoneyRails.configure do |config|
                            column_name: nil,     # full column name (overrides prefix, postfix and accessor name)
                            type: :bigint,        # column type
                            present: true,        # column will be created
-                           null: true,           # other options will be treated as column options
-                           default: nil
+                           null: false,           # other options will be treated as column options
+                           default: 0
   }
   #
   # config.currency_column = { prefix: '',

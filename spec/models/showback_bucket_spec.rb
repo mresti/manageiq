@@ -68,7 +68,7 @@ RSpec.describe ShowbackBucket, type: :model do
       expect{ bucket.showback_events << event}.to change( bucket.showback_charges, :count).by(1)
       charge = bucket.showback_charges.last
       expect(charge.showback_event).to eq(event)
-      expect{ charge.fixed_cost_cents = 3 }.to change(charge, :fixed_cost_cents).from(0).to(3)
+      expect{ charge.fixed_cost = Money.new(3) }.to change(charge, :fixed_cost).from(nil).to(Money.new(3))
     end
 
     it  'events can be associated to variable costs' do
@@ -77,7 +77,7 @@ RSpec.describe ShowbackBucket, type: :model do
       expect{ bucket.showback_events << event}.to change( bucket.showback_charges, :count).by(1)
       charge = bucket.showback_charges.last
       expect(charge.showback_event).to eq(event)
-        expect{ charge.variable_cost_cents = 3 }.to change(charge, :variable_cost_cents).from(0).to(3)
+      expect{ charge.variable_cost = Money.new(3) }.to change(charge, :variable_cost).from(nil).to(Money.new(3))
     end
 
     pending 'charges can be updated for an event'

@@ -21,12 +21,6 @@ RSpec.describe ShowbackTariff, type: :model do
     expect(tariff.errors.details[:description]). to include({:error => :blank})
   end
 
-  it 'is not valid without an association to a parent element' do
-    tariff.resource = nil
-    tariff.valid?
-    expect(tariff.errors.details[:resource]). to include({:error => :blank})
-  end
-
   it 'is possible to add new rates to the tariff' do
     tariff.save
     rate = FactoryGirl.build(:showback_rate, showback_tariff: tariff)

@@ -42,12 +42,12 @@ describe ShowbackRate do
       expect(showback_rate.errors.details[:dimension]).to include(:error=>:blank)
     end
 
-    it "variable_cost expected to be BigDeciaml" do
-      expect(FactoryGirl.create(:showback_rate, :variable_cost => BigDecimal.new("2.5634525342534"))).to be_valid
+    it "variable_cost expected to be bigint" do
+      expect(FactoryGirl.create(:showback_rate, :variable_cost => 274_525_342_534)).to be_valid
     end
 
-    it "fixed_cost expected to be BigDeciaml" do
-      expect(FactoryGirl.create(:showback_rate, :fixed_cost => BigDecimal.new("67.4525342534"))).to be_valid
+    it "fixed_cost expected to be bigint" do
+      expect(FactoryGirl.create(:showback_rate, :fixed_cost => 674_525_342_534)).to be_valid
     end
   end
 end

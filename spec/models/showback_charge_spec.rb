@@ -31,7 +31,7 @@ RSpec.describe ShowbackCharge, :type => :model do
     expect(charge).to be_valid
   end
 
-  it 'is valid when assigning fixed_costs' do
+  it 'is valid when assigning fixed_cost' do
     charge.fixed_cost = 15
     charge.valid?
     expect(charge).to be_valid

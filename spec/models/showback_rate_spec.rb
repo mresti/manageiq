@@ -6,48 +6,48 @@ describe ShowbackRate do
       expect(showback_rate).to be_valid
     end
 
-    it "is not valid with a nil fixed_cost" do
-      showback_rate.fixed_cost = nil
+    it "is not valid with a nil fixed_rate" do
+      showback_rate.fixed_rate = nil
       showback_rate.valid?
-      expect(showback_rate.errors.details[:fixed_cost]).to include(:error=>:blank)
+      expect(showback_rate.errors.details[:fixed_rate]).to include(:error=>:blank)
     end
 
-    it "is not valid with a nil variable_cost" do
-      showback_rate.variable_cost = nil
+    it "is not valid with a nil variable_rate" do
+      showback_rate.variable_rate = nil
       showback_rate.valid?
-      expect(showback_rate.errors.details[:variable_cost]).to include(:error=>:blank)
+      expect(showback_rate.errors.details[:variable_rate]).to include(:error=>:blank)
     end
 
-    it 'is valid when assigning fixed_cost' do
-      showback_rate.fixed_cost = 15
-      showback_rate.valid?
-      expect(showback_rate).to be_valid
-    end
-
-    it 'is valid when assigning variable_cost' do
-      showback_rate.variable_cost = 30
+    it 'is valid when assigning fixed_rate' do
+      showback_rate.fixed_rate = 15
       showback_rate.valid?
       expect(showback_rate).to be_valid
     end
 
-    it 'is not valid if fixed cost is not money' do
-      showback_rate.fixed_cost = "cost"
+    it 'is valid when assigning variable_rate' do
+      showback_rate.variable_rate = 30
       showback_rate.valid?
-      expect(showback_rate.errors.details[:fixed_cost]).to include(:error => :not_a_number, :value => "cost")
+      expect(showback_rate).to be_valid
     end
 
-    it 'is not valid if variable cost is not money' do
-      showback_rate.variable_cost = "cost"
+    it 'is not valid if fixed rate is not money' do
+      showback_rate.fixed_rate = "cost"
       showback_rate.valid?
-      expect(showback_rate.errors.details[:variable_cost]).to include(:error => :not_a_number, :value => "cost")
+      expect(showback_rate.errors.details[:fixed_rate]).to include(:error => :not_a_number, :value => "cost")
     end
 
-    it "variable_cost expected to be bigint" do
-      expect(FactoryGirl.create(:showback_rate, :variable_cost => 274_525_342_534)).to be_valid
+    it 'is not valid if variable rate is not money' do
+      showback_rate.variable_rate = "cost"
+      showback_rate.valid?
+      expect(showback_rate.errors.details[:variable_rate]).to include(:error => :not_a_number, :value => "cost")
     end
 
-    it "fixed_cost expected to be bigint" do
-      expect(FactoryGirl.create(:showback_rate, :fixed_cost => 674_525_342_534)).to be_valid
+    it "variable_rate expected to be bigint" do
+      expect(FactoryGirl.create(:showback_rate, :variable_rate => 274_525_342_534)).to be_valid
+    end
+
+    it "fixed_rate expected to be bigint" do
+      expect(FactoryGirl.create(:showback_rate, :fixed_rate => 674_525_342_534)).to be_valid
     end
 
     it "is  valid with a nil concept" do

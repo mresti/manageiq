@@ -42,6 +42,30 @@ describe ShowbackRate do
       expect(showback_rate.errors.details[:dimension]).to include(:error=>:blank)
     end
 
+    it 'is valid when assigning fixed_rate' do
+      showback_rate.fixed_rate = 15
+      showback_rate.valid?
+      expect(showback_rate).to be_valid
+    end
+
+    it 'is valid when assigning variable_rate' do
+      showback_rate.variable_rate = 30
+      showback_rate.valid?
+      expect(showback_rate).to be_valid
+    end
+
+    it 'is not valid if fixed rate is not money' do
+      showback_rate.fixed_rate = 'cost'
+      showback_rate.valid?
+      expect(showback_rate.errors.details[:fixed_rate]).to include(:error => :not_a_number, :value => "cost")
+    end
+
+    it 'is not valid if variable rate is not money' do
+      showback_rate.variable_rate = 'cost'
+      showback_rate.valid?
+      expect(showback_rate.errors.details[:variable_rate]).to include(:error => :not_a_number, :value => "cost")
+    end
+
     it "fixed_rate expected to be Money" do
       expect(FactoryGirl.create(:showback_rate, :fixed_rate => Money.new("2.5634525342534"))).to be_valid
       expect(ShowbackRate).to monetize(:fixed_rate)

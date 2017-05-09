@@ -18,6 +18,7 @@ GlobalVars:
   - $scvmm_log
   - $vim_log
   - $websocket_log
+  - $miq_showback
   # In Automate methods
   - $evm
 #

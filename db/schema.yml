@@ -6467,6 +6467,11 @@ showback_buckets:
 - resource_id
 - created_at
 - updated_at
+- start_time
+- end_time
+- state
+- accumulated_cost_cents
+- accumulated_cost_currency
 showback_charges:
 - id
 - showback_bucket_id

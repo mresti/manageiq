@@ -10,7 +10,7 @@ class ShowbackModels < ActiveRecord::Migration[5.0]
     end
 
     create_table :showback_events do |t|
-      t.json       :data
+      t.json       :data,    :default => {}
       t.timestamp  :start_time  # when start the event
       t.timestamp  :end_time    # when finish the event
       t.belongs_to :resource, :allow_nil => false, :type => :bigint, :polymorphic => true
@@ -29,29 +29,34 @@ class ShowbackModels < ActiveRecord::Migration[5.0]
     end
 
     create_table :showback_rates, :id => :bigserial, :force => :cascade do |t|
-      t.decimal    :fixed_cost,    :allow_nil  => true, :default => nil
-      t.decimal    :variable_cost, :allow_nil  => true, :default => nil
+      t.monetize   :fixed_rate,    :allow_nil  => true, :default => nil
+      t.monetize   :variable_rate, :allow_nil  => true, :default => nil
       t.string     :calculation,   :allow_nil  => false
       t.string     :category,      :allow_nil  => false
       t.string     :dimension,     :allow_nil  => false
+      t.jsonb      :screener,      :allow_nil  => false, :default => {}
       t.datetime   :date
       t.string     :concept
       t.belongs_to :showback_price_plan, :type => :bigint
       t.timestamps
     end
-    add_index :showback_rates, :category
-    add_index :showback_rates, [:category, :dimension, :showback_price_plan_id, :calculation], :unique => true, :name => 'unique_usage_type_for_rate'
+    add_index :showback_rates, :screener, using: :gin
+    add_index :showback_rates, [:category, :dimension]
 
     create_table :showback_buckets, :id => :bigserial, :force => :cascade do |t|
       t.string     :name
       t.string     :description
+      t.timestamp  :start_time
+      t.timestamp  :end_time
+      t.string     :state
+      t.monetize   :accumulated_cost
       t.references :resource, :polymorphic => true, :type => :bigint, :index => true
       t.timestamps
     end
 
     create_table :showback_charges, :id => :bigserial, :force => :cascade do |t|
-      t.decimal    :fixed_cost,    :allow_nil  => true
-      t.decimal    :variable_cost, :allow_nil  => true
+      t.monetize   :fixed_cost,      :allow_nil  => true
+      t.monetize   :variable_cost,   :allow_nil  => true
       t.belongs_to :showback_bucket, :type => :bigint, :index => true
       t.belongs_to :showback_event,  :type => :bigint, :index => true
       t.timestamps

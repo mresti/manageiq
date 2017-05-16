@@ -19,6 +19,8 @@ RSpec.describe ShowbackCharge, :type => :model do
     expect(charge.errors.details[:showback_event]). to include(:error => :blank)
   end
 
+  pending 'is not valid with nil cost'
+
   it 'is valid with nil fixed_cost' do
     charge.fixed_cost = nil
     charge.valid?
@@ -37,6 +39,6 @@ RSpec.describe ShowbackCharge, :type => :model do
     expect(charge).to be_valid
   end
 
-  pending 'is not valid if fixed cost is not money'
-  pending 'is not valid if variable cost is not money'
+  pending 'is not valid if cost is not money'
+
 end

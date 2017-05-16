@@ -3,7 +3,8 @@ class ShowbackRate < ApplicationRecord
 
   monetize :fixed_rate_cents
   monetize :variable_rate_cents
-  validates :calculation,        :presence  => true
-  validates :category,           :presence  => true
-  validates :dimension,          :presence  => true
+  validates :calculation,:presence => true
+  validates :category,   :presence => true
+  validates :dimension,  :presence => true
+  # validates :screener,   :presence => true, :allow_blank => true
 end

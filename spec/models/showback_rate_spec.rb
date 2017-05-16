@@ -42,12 +42,17 @@ describe ShowbackRate do
       expect(showback_rate.errors.details[:dimension]).to include(:error=>:blank)
     end
 
+    pending "is not valid with a nil screener" do
+      showback_rate.screener = nil
+      showback_rate.valid?
+      expect(showback_rate.errors.details[:screener]).to include(:error=>:blank)
+    end
     it "fixed_rate expected to be Money" do
       expect(FactoryGirl.create(:showback_rate, :fixed_rate => Money.new("2.5634525342534"))).to be_valid
       expect(ShowbackRate).to monetize(:fixed_rate)
     end
 
-    it "variable_rate expected to be BigDeciaml" do
+    it "variable_rate expected to be Money" do
       expect(FactoryGirl.create(:showback_rate, :variable_rate => Money.new("67.4525342534"))).to be_valid
       expect(ShowbackRate).to monetize(:variable_rate)
     end

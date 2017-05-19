@@ -21,20 +21,15 @@ RSpec.describe ShowbackCharge, :type => :model do
 
   pending 'is not valid with nil cost'
 
-  it 'is valid with nil fixed_cost' do
-    charge.fixed_cost = nil
+  it 'is valid with cost' do
+    charge.cost = nil
     charge.valid?
     expect(charge).to be_valid
   end
 
-  it 'is valid with nil variable_cost' do
-    charge.variable_cost = nil
-    charge.valid?
-    expect(charge).to be_valid
-  end
 
   it 'is valid when assigning fixed_costs' do
-    charge.fixed_cost = 15
+    charge.cost = 15
     charge.valid?
     expect(charge).to be_valid
   end

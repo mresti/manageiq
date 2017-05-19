@@ -10,11 +10,11 @@ class ShowbackModels < ActiveRecord::Migration[5.0]
     end
 
     create_table :showback_events do |t|
-      t.json       :data,    :default => {}
+      t.json       :data, :default => {}
       t.timestamp  :start_time  # when start the event
       t.timestamp  :end_time    # when finish the event
       t.belongs_to :resource, :allow_nil => false, :type => :bigint, :polymorphic => true
-      t.json       :context, :default => {}
+      t.json       :context,  :default => {}
       t.timestamp  :updated_at
       t.timestamp  :created_at
     end
@@ -55,8 +55,7 @@ class ShowbackModels < ActiveRecord::Migration[5.0]
     end
 
     create_table :showback_charges, :id => :bigserial, :force => :cascade do |t|
-      t.monetize   :fixed_cost,      :allow_nil  => true
-      t.monetize   :variable_cost,   :allow_nil  => true
+      t.monetize   :cost,            :allow_nil => true
       t.belongs_to :showback_bucket, :type => :bigint, :index => true
       t.belongs_to :showback_event,  :type => :bigint, :index => true
       t.timestamps

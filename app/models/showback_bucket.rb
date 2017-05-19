@@ -20,9 +20,9 @@ class ShowbackBucket < ApplicationRecord
 
   def check_bucket_state
     case state_was
-      when "OPEN"  then raise _("Bucket can't pass to CLOSE after OPEN")      unless state != "CLOSE"
+      when "OPEN"  then raise _("Bucket can't change its state to CLOSE from OPEN")      unless state != "CLOSE"
       when "PROCESSING"
-        raise _("Bucket can't pass to OPEN after PROCESSING") unless state != "OPEN"
+        raise _("Bucket can't change its state to OPEN from PROCESSING") unless state != "OPEN"
         s_time = (self.start_time + 1.months).beginning_of_month
         if self.end_time != self.start_time.end_of_month
           s_time = self.end_time
@@ -37,7 +37,7 @@ class ShowbackBucket < ApplicationRecord
                               :end_time    => e_time,
                               :state       => "OPEN"
         ) unless ShowbackBucket.exists?(:resource => self.resource, :start_time  => s_time)
-      when "CLOSE"      then  raise _("Bucket can't change state after CLOSE")
+      when "CLOSE"      then  raise _("Bucket can't change its state when it's CLOSE")
     end
   end
 end

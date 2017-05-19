@@ -72,28 +72,28 @@ RSpec.describe ShowbackBucket, :type => :model do
 
       it 'it can not transition from open to closed' do
         @bucket_lifecycle.state = "CLOSE"
-        expect{ @bucket_lifecycle.save }.to raise_error(RuntimeError,"Bucket can't pass to CLOSE after OPEN")
+        expect { @bucket_lifecycle.save }.to raise_error(RuntimeError, "Bucket can't change its state to CLOSE from OPEN")
       end
 
       it 'it can not transition from processing to open' do
         @bucket_lifecycle = FactoryGirl.create(:showback_bucket_processing)
         @bucket_lifecycle.state = "OPEN"
-        expect{ @bucket_lifecycle.save }.to raise_error(RuntimeError,"Bucket can't pass to OPEN after PROCESSING")
+        expect { @bucket_lifecycle.save }.to raise_error(RuntimeError, "Bucket can't change its state to OPEN from PROCESSING")
       end
 
       it 'it can transition from processing to closed' do
         @bucket_lifecycle = FactoryGirl.create(:showback_bucket_processing)
         @bucket_lifecycle.state = "CLOSE"
-        expect{ @bucket_lifecycle.save }.not_to raise_error
+        expect { @bucket_lifecycle.save }.not_to raise_error
       end
 
       it 'it can not transition from closed to open or processing' do
         @bucket_lifecycle = FactoryGirl.create(:showback_bucket_close)
         @bucket_lifecycle.state = "OPEN"
-        expect{ @bucket_lifecycle.save }.to raise_error(RuntimeError,"Bucket can't change state after CLOSE")
+        expect { @bucket_lifecycle.save }.to raise_error(RuntimeError, "Bucket can't change its state when it's CLOSE")
         @bucket_lifecycle = FactoryGirl.create(:showback_bucket_close)
         @bucket_lifecycle.state = "PROCESSING"
-        expect{ @bucket_lifecycle.save }.to raise_error(RuntimeError,"Bucket can't change state after CLOSE")
+        expect { @bucket_lifecycle.save }.to raise_error(RuntimeError, "Bucket can't change its state when it's CLOSE")
       end
     end
 
@@ -108,30 +108,17 @@ RSpec.describe ShowbackBucket, :type => :model do
       expect(bucket.showback_events.last).to eq(event)
     end
 
-    it 'events can be associated to fixed costs' do
+    it 'events can be associated to costs' do
       bucket.save
       event.save
       expect { bucket.showback_events << event }.to change(bucket.showback_charges, :count).by(1)
       charge = bucket.showback_charges.last
       expect(charge.showback_event).to eq(event)
-      expect { charge.fixed_cost = Money.new(3) }.to change(charge, :fixed_cost).from(0).to(Money.new(3))
+      expect { charge.cost = Money.new(3) }.to change(charge, :cost).from(0).to(Money.new(3))
     end
 
-    it 'events can be associated to variable costs' do
-      bucket.save
-      event.save
-      expect { bucket.showback_events << event }.to change(bucket.showback_charges, :count).by(1)
-      charge = bucket.showback_charges.last
-      expect(charge.showback_event).to eq(event)
-      expect { charge.variable_cost = Money.new(3) }.to change(charge, :variable_cost).from(0).to(Money.new(3))
-    end
-
-    it 'monetizes fixed costs' do
-      expect(ShowbackCharge).to monetize(:fixed_cost)
-    end
-
-    it 'monetized variable costs' do
-      expect(ShowbackCharge).to monetize(:variable_cost)
+    it 'monetized cost' do
+      expect(ShowbackCharge).to monetize(:cost)
     end
 
     pending 'charges can be updated for an event'
